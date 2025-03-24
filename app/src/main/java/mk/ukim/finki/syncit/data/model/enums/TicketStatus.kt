@@ -1,6 +1,6 @@
 package mk.ukim.finki.syncit.data.model.enums
 
-enum class TicketStatus {
-    VALID,
-    INVALID
+enum class TicketStatus(val label: String) {
+    VALID("Valid"),
+    INVALID("Invalid")
 }

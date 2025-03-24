@@ -11,30 +11,31 @@ import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
 import mk.ukim.finki.syncit.presentation.components.SegmentedToggle
+import mk.ukim.finki.syncit.presentation.components.TicketList
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpcomingEventsScreen(navController: NavController) {
     var createdTab by remember { mutableStateOf(0) } // 0 = Upcoming, 1 = History
-    var enrolledTab by remember { mutableStateOf(0) } // 0 = Upcoming, 1 = History
+    var ticketsTab by remember { mutableStateOf(0) } // 0 = Upcoming, 1 = History
 
     //TODO here
     val userId = "current_user_id" // Replace with actual user ID retrieval
     //TODO make the calls
 //    val createdEvents = MockData.events.filter { it.host.id == userId }
-//    val enrolledEvents = MockData.events.filter { it.participants.any { p -> p == userId } }
+//    val ticketsEvents = MockData.events.filter { it.participants.any { p -> p == userId } }
     val createdEvents = MockData.events.take(5)
-    val enrolledEvents = MockData.events.subList(5, MockData.events.size - 1)
+    val tickets = MockData.tickets
 
     val createdFiltered = createdEvents.filter {
         if (createdTab == 0) it.startTime.isAfter(LocalDateTime.now())
         else it.startTime.isBefore(LocalDateTime.now())
     }
 
-    val enrolledFiltered = enrolledEvents.filter {
-        if (enrolledTab == 0) it.startTime.isAfter(LocalDateTime.now())
-        else it.startTime.isBefore(LocalDateTime.now())
+    val ticketsFiltered = tickets.filter {
+        if (ticketsTab == 0) it.event.startTime.isAfter(LocalDateTime.now())
+        else it.event.startTime.isBefore(LocalDateTime.now())
     }
 
     Scaffold(
@@ -66,9 +67,9 @@ fun UpcomingEventsScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Section for Enrolled Events
+            // Section for Tickets
             Column(modifier = Modifier.weight(1f, false)) {
-                Text("My Enrolled Events", style = MaterialTheme.typography.titleMedium)
+                Text("My Tickets", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(10.dp))
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -76,12 +77,12 @@ fun UpcomingEventsScreen(navController: NavController) {
                 ) {
                     SegmentedToggle(
                         options = listOf("Upcoming", "History"),
-                        selectedIndex = enrolledTab,
-                        onOptionSelected = { enrolledTab = it }
+                        selectedIndex = ticketsTab,
+                        onOptionSelected = { ticketsTab = it }
                     )
                 }
                 Spacer(Modifier.height(10.dp))
-                EventList(events = enrolledFiltered, navController = navController)
+                TicketList(tickets = ticketsFiltered, navController = navController)
             }
         }
     }

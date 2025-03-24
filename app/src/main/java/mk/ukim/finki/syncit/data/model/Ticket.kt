@@ -9,7 +9,7 @@ data class Ticket (
     val user: UserModel,
     val event: Event,
     val uniqueCode: String,
-    val ticketUsed: TicketStatus = TicketStatus.VALID
+    val ticketStatus: TicketStatus = TicketStatus.VALID
 )
 
 fun generateUniqueCode(): String {

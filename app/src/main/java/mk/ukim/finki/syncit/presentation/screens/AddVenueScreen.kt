@@ -1,12 +1,13 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package mk.ukim.finki.syncit.presentation.screens
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -26,12 +27,15 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
+@SuppressLint("ClickableViewAccessibility")
 @Composable
 fun AddVenueScreen(navController: NavController) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var maxCapacity by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
+    var latitude by remember { mutableStateOf<Double?>(null) }
+    var longitude by remember { mutableStateOf<Double?>(null) }
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var marker by remember { mutableStateOf<Marker?>(null) }
     val coroutineScope = rememberCoroutineScope()
@@ -39,13 +43,22 @@ fun AddVenueScreen(navController: NavController) {
     val SELECTED_POINT_MAP_ZOOM = 16.0
     val SELECTED_POINT_MAP_ZOOM_SPEED = 2L
 
+    fun setLatitudeAndLongitudeFromGeoPoint(point: GeoPoint) {
+        latitude = point.latitude
+        longitude = point.longitude
+    }
+
     fun onLocationSelected(lat: Double, lon: Double) {
         location = "Fetching address..."
         coroutineScope.launch {
-            val address = GeocodingService.getAddressFromCoordinates(lat, lon)
+            val address = withContext(Dispatchers.IO) {
+                GeocodingService.getAddressFromCoordinates(lat, lon)
+            }
+            val centerGeoPoint = GeoPoint(lat, lon)
+            setLatitudeAndLongitudeFromGeoPoint(centerGeoPoint)
+            mapView?.controller?.setCenter(centerGeoPoint)
+            mapView?.controller?.setZoom(SELECTED_POINT_MAP_ZOOM)
             location = address ?: "Unknown Location"
-            mapView?.controller?.setCenter(GeoPoint(lat, lon))
-            marker?.position = GeoPoint(lat, lon)
         }
     }
 
@@ -55,6 +68,7 @@ fun AddVenueScreen(navController: NavController) {
                 GeocodingService.getCoordinatesFromAddress(address)
             }
             geoPoint?.let { point ->
+                setLatitudeAndLongitudeFromGeoPoint(point)
                 withContext(Dispatchers.Main) {
                     mapView?.let { map ->
                         map.controller.animateTo(
@@ -139,39 +153,62 @@ fun AddVenueScreen(navController: NavController) {
                 value = location,
                 onValueChange = { location = it },
                 label = { Text("Location") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = {
+                        if (location.isNotEmpty()) {
+                            updateLocationOnMap(location)
+                        }
+                    }) {
+                        Icon(Icons.Default.Search, contentDescription = "Search Location")
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-                AndroidView(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .clipToBounds(),
-                    factory = { context ->
-                        // Initialize OSM map
-                        MapView(context).apply {
-                            val prefs = context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE)
-                            Configuration.getInstance().load(context, prefs)
-                            setTileSource(TileSourceFactory.MAPNIK)
-                            setMultiTouchControls(true)
+            AndroidView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .clipToBounds(),
+                factory = { context ->
+                    MapView(context).apply {
+                        val prefs = context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE)
+                        Configuration.getInstance().load(context, prefs)
+                        setTileSource(TileSourceFactory.MAPNIK)
+                        setMultiTouchControls(true)
 
-                            val centerGeoPoint = GeoPoint(41.6086, 21.7453)
-                            controller.setCenter(centerGeoPoint)
-                            controller.setZoom(9.0)
+                        val centerGeoPoint = GeoPoint(41.6086, 21.7453)
+                        controller.setCenter(centerGeoPoint)
+                        controller.setZoom(9.0)
 
-                            mapView = this
+                        mapView = this
+
+                        // Initialize marker
+                        marker = Marker(this).apply {
+                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                            icon = context.getDrawable(R.drawable.location_on_24px)
                         }
-                    },
-                    update = { map ->
-                        map?.let {
-                            if (location.isNotEmpty()) {
-                                updateLocationOnMap(location)
+                        this.overlays.add(marker)
+
+                        // Add touch listener for tap events
+                        this.overlays.add(object : org.osmdroid.views.overlay.Overlay() {
+                            override fun onSingleTapConfirmed(e: android.view.MotionEvent?, mapView: MapView?): Boolean {
+                                e?.let {
+                                    val geoPoint = mapView?.projection?.fromPixels(e.x.toInt(), e.y.toInt()) as GeoPoint
+                                    onLocationSelected(geoPoint.latitude, geoPoint.longitude)
+
+                                    // Update marker position
+                                    marker?.position = geoPoint
+                                    mapView.invalidate()
+                                }
+                                return true
                             }
-                        }
+                        })
                     }
-                )
+                }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
