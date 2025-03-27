@@ -5,6 +5,7 @@ data class Venue(
     val title: String,
     val description: String,
     val maxCapacity: Long,
+    val address: String,
     val latitude: Double,
     val longitude: Double,
     val eventIds: List<String> = emptyList()

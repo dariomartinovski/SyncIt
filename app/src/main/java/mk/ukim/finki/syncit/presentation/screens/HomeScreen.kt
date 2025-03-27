@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
+import mk.ukim.finki.syncit.presentation.components.EventsMap
 import mk.ukim.finki.syncit.presentation.components.ExpandableFAB
 
 
@@ -29,7 +30,10 @@ fun HomeScreen(navController: NavController) {
                 title = { Text("SyncIt") },
                 actions = {
                     IconButton(onClick = { isListView = !isListView }) {
-                        Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Toggle View")
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = "Toggle View"
+                        )
                     }
                 }
             )
@@ -47,15 +51,16 @@ fun HomeScreen(navController: NavController) {
                 .padding(16.dp)
         ) {
             Column {
-                EventList(events = events, navController = navController)
+                Button(onClick = { navController.navigate("login") }) {
+                    Text("Go to Login")
+                }
+                Text("Events")
+                if (isListView) {
+                    EventList(events = events, navController = navController)
+                } else {
+                    EventsMap(events = events, navController = navController)
+                }
             }
         }
-    //            if (isListView) {
-//                EventList(events = events, navController = navController)
-//            }
-//            else {
-//                EventMapView(events = events)
-//            }
-//
     }
 }

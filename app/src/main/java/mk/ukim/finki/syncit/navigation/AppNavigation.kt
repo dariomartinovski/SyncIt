@@ -9,7 +9,9 @@ import mk.ukim.finki.syncit.presentation.screens.AddVenueScreen
 import mk.ukim.finki.syncit.presentation.screens.BuyTicketsScreen
 import mk.ukim.finki.syncit.presentation.screens.EventDetailsScreen
 import mk.ukim.finki.syncit.presentation.screens.HomeScreen
+import mk.ukim.finki.syncit.presentation.screens.LoginScreen
 import mk.ukim.finki.syncit.presentation.screens.ProfileScreen
+import mk.ukim.finki.syncit.presentation.screens.RegisterScreen
 import mk.ukim.finki.syncit.presentation.screens.TicketDetailsScreen
 import mk.ukim.finki.syncit.presentation.screens.UpcomingEventsScreen
 
@@ -18,6 +20,8 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "home") {
+        composable("login") { LoginScreen(navController) }
+        composable("register") { RegisterScreen(navController) }
         composable("home") { HomeScreen(navController) }
         composable("upcomingEvents") { UpcomingEventsScreen(navController) }
         composable("profile") { ProfileScreen(navController) }

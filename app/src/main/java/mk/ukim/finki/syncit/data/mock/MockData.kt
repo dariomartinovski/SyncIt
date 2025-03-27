@@ -40,6 +40,7 @@ object MockData {
         Venue(
             id = "venue1",
             title = "Mavrovo Ski Resort",
+            address = "Mavrovo",
             latitude = 41.7006,
             longitude = 20.7411,
             description = "Popular winter sports destination",
@@ -49,6 +50,7 @@ object MockData {
         Venue(
             id = "venue2",
             title = "City Park Skopje",
+            address = "Skopje",
             latitude = 41.9973,
             longitude = 21.4254,
             description = "Green park in the center of Skopje",
@@ -58,6 +60,7 @@ object MockData {
         Venue(
             id = "venue3",
             title = "Ohrid Amphitheater",
+            address = "Ohrid",
             latitude = 41.1132,
             longitude = 20.8016,
             description = "Historic open-air theater with lake views",

@@ -81,7 +81,7 @@ fun AddEventScreen(navController: NavController) {
             OutlinedTextField(
                 value = entryFee,
                 onValueChange = { entryFee = it },
-                label = { Text("Longitude") },
+                label = { Text("Entry Fee") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -142,7 +142,7 @@ fun AddEventScreen(navController: NavController) {
                 onExpandedChange = { expandedCategory = !expandedCategory }
             ) {
                 OutlinedTextField(
-                    value = selectedCategory?.name ?: "Select Category",
+                    value = selectedCategory?.label ?: "Select Category",
                     onValueChange = {},
                     label = { Text("Select Category") },
                     readOnly = true,
