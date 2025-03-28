@@ -2,6 +2,7 @@ package mk.ukim.finki.syncit.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -39,19 +41,22 @@ fun HeaderSection() {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFF003366))
-            .padding(50.dp),
+            .padding(top = 125.dp, start = 50.dp, bottom = 50.dp)
+        ,
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "Welcome to\nLogin",
+            text = "Sign in to your\nAccount",
             fontSize = 40.sp,
-            color = Color.LightGray
+            color = Color.LightGray,
+            fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Please enter your credentials",
-            fontSize = 12.sp,
-            color = Color.Gray
+            text = "Sign in to your Account",
+            fontSize = 14.sp,
+            color = Color.Gray,
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -100,7 +105,9 @@ fun LoginForm(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF003366)
-            )        ) {
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
             Text("Login", color = Color.White, fontSize = 14.sp)
         }
         Spacer(modifier = Modifier.height(12.dp))

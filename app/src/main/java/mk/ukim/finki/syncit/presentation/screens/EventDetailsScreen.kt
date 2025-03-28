@@ -92,5 +92,18 @@ fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navControll
                 color = Color.White
             )
         }
+
+        //TODO add the scan tickets button here.
+        Button(
+            onClick = {
+                navController.navigate("scanTickets")
+            }
+        ) {
+            Text(
+                text = "Scan tickets",
+                fontSize = 18.sp,
+                color = Color.White
+            )
+        }
     }
 }

@@ -51,6 +51,11 @@ fun HomeScreen(navController: NavController) {
                 .padding(16.dp)
         ) {
             Column {
+
+                Button(onClick = { navController.navigate("scanTickets") }) {
+                    Text("Scan tickets here")
+                }
+
                 Button(onClick = { navController.navigate("login") }) {
                     Text("Go to Login")
                 }

@@ -12,6 +12,7 @@ import mk.ukim.finki.syncit.presentation.screens.HomeScreen
 import mk.ukim.finki.syncit.presentation.screens.LoginScreen
 import mk.ukim.finki.syncit.presentation.screens.ProfileScreen
 import mk.ukim.finki.syncit.presentation.screens.RegisterScreen
+import mk.ukim.finki.syncit.presentation.screens.ScanTicketScreen
 import mk.ukim.finki.syncit.presentation.screens.TicketDetailsScreen
 import mk.ukim.finki.syncit.presentation.screens.UpcomingEventsScreen
 
@@ -48,5 +49,6 @@ fun AppNavigation() {
                 navController = navController
         )
         }
+        composable("scanTickets") { ScanTicketScreen(navController) }
     }
 }
