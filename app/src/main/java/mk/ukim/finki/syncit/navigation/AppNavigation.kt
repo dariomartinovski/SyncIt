@@ -15,6 +15,7 @@ import mk.ukim.finki.syncit.presentation.screens.RegisterScreen
 import mk.ukim.finki.syncit.presentation.screens.ScanTicketScreen
 import mk.ukim.finki.syncit.presentation.screens.TicketDetailsScreen
 import mk.ukim.finki.syncit.presentation.screens.UpcomingEventsScreen
+import mk.ukim.finki.syncit.presentation.screens.UpcomingTicketsScreen
 
 @Composable
 fun AppNavigation() {
@@ -25,6 +26,7 @@ fun AppNavigation() {
         composable("register") { RegisterScreen(navController) }
         composable("home") { HomeScreen(navController) }
         composable("upcomingEvents") { UpcomingEventsScreen(navController) }
+        composable("upcomingTickets") { UpcomingTicketsScreen(navController) }
         composable("profile") { ProfileScreen(navController) }
         composable("eventDetails/{eventId}") { backStackEntry ->
             EventDetailsScreen(

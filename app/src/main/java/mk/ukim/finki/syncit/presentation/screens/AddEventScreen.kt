@@ -16,6 +16,7 @@ import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.enums.Category
 import mk.ukim.finki.syncit.data.model.Venue
 import mk.ukim.finki.syncit.presentation.components.DateTimePicker
+import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 import mk.ukim.finki.syncit.utils.toFormattedDate
 import mk.ukim.finki.syncit.utils.toFormattedTime
@@ -59,6 +60,10 @@ fun AddEventScreen(navController: NavController) {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
+            TextUtils.LargeTitle("Add Event")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
@@ -172,7 +177,7 @@ fun AddEventScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Button(
                 onClick = { _saveEvent() },

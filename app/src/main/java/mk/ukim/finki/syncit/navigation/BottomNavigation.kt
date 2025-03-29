@@ -9,8 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocalActivity
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -32,11 +32,22 @@ fun BottomNavigationBar(navController: NavController) {
             }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Event, contentDescription = "Upcoming Events") },
-            label = { Text("Upcoming Events") },
+            icon = { Icon(Icons.Default.Event, contentDescription = "My Events") },
+            label = { Text("My Events") },
             selected = currentRoute == "upcomingEvents",
             onClick = {
                 navController.navigate("upcomingEvents") {
+                    popUpTo(navController.graph.startDestinationId)
+                    launchSingleTop = true
+                }
+            }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.LocalActivity, contentDescription = "My Tickets") },
+            label = { Text("My Tickets") },
+            selected = currentRoute == "upcomingTickets",
+            onClick = {
+                navController.navigate("upcomingTickets") {
                     popUpTo(navController.graph.startDestinationId)
                     launchSingleTop = true
                 }

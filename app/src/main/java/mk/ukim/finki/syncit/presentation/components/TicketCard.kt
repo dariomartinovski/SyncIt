@@ -15,7 +15,6 @@ fun TicketCard(ticket: Ticket, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .clickable { onClick() }
     ) {
         Column(

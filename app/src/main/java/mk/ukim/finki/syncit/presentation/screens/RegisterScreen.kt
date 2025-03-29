@@ -1,18 +1,19 @@
 package mk.ukim.finki.syncit.presentation.screens
 
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
@@ -32,7 +33,12 @@ import mk.ukim.finki.syncit.utils.ValidationUtils
 
 @Composable
 fun RegisterScreen(navController: NavController) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)) {
         RegisterHeader()
         RegisterForm(navController)
     }
@@ -97,7 +103,7 @@ fun RegisterForm(navController: NavController) {
         if (!ValidationUtils.isValidEmail(email)) {
             emailError = "Last name must contain only letters"
         }
-        passwordErrors = ValidationUtils.isValidPassword(phoneNumber)
+        passwordErrors = ValidationUtils.isValidPassword(password)
 
         if (firstNameError.isNotEmpty() || lastNameError.isNotEmpty() ||
             phoneNumberError.isNotEmpty() || emailError.isNotEmpty() ||
@@ -107,7 +113,10 @@ fun RegisterForm(navController: NavController) {
         //TODO make call here
     }
 
-    Column(modifier = Modifier.padding(20.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            ) {
         OutlinedTextField(
             value = firstName,
             onValueChange = { firstName = it },
@@ -153,7 +162,7 @@ fun RegisterForm(navController: NavController) {
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 val image =
-                    if (passwordVisible) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder
+                    if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(imageVector = image, contentDescription = "Toggle password visibility")
                 }
@@ -199,8 +208,10 @@ fun RegisterForm(navController: NavController) {
 
 @Composable
 fun ErrorText(error: String) {
-    if (error.isNotEmpty())
+    if (error.isNotEmpty()){
+        Spacer(Modifier.height(3.dp))
         Text(error, color = Color.Red)
+    }
 }
 
 @Preview(showBackground = true)

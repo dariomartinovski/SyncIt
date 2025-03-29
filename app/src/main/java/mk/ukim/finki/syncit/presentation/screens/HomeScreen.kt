@@ -4,6 +4,8 @@ package mk.ukim.finki.syncit.presentation.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,6 +20,7 @@ import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
 import mk.ukim.finki.syncit.presentation.components.EventsMap
 import mk.ukim.finki.syncit.presentation.components.ExpandableFAB
+import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
 
@@ -52,7 +55,10 @@ fun HomeScreen(navController: NavController) {
                 .padding(16.dp)
         ) {
             Column {
-                Text("Events")
+                TextUtils.LargeTitle("Events")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 if (isListView) {
                     EventList(events = events, navController = navController)
                 } else {

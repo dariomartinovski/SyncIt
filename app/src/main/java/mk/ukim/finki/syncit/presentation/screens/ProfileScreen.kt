@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.model.UserModel
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
+import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +33,6 @@ fun ProfileScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = { TopBarUtils.CustomTitle("Profile") },
-                navigationIcon = { TopBarUtils.CustomBackAction(navController) },
                 actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
                 colors = TopBarUtils.CustomBackground(),
             )
@@ -45,7 +45,7 @@ fun ProfileScreen(navController: NavController) {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            Text("Edit Profile", style = MaterialTheme.typography.titleLarge)
+            TextUtils.LargeTitle("Edit Profile")
 
             Spacer(modifier = Modifier.height(16.dp))
 

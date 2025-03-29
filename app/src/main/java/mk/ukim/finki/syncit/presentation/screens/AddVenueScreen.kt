@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mk.ukim.finki.syncit.R
 import mk.ukim.finki.syncit.domain.services.GeocodingService
+import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -120,6 +121,10 @@ fun AddVenueScreen(navController: NavController) {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
+            TextUtils.LargeTitle("Add Venue")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
@@ -209,7 +214,7 @@ fun AddVenueScreen(navController: NavController) {
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Button(
                 onClick = {

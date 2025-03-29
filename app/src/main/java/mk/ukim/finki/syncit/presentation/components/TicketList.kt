@@ -20,7 +20,6 @@ fun TicketList(tickets: List<Ticket>, navController: NavController) {
             text = "No Tickets",
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
         )
     } else {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
