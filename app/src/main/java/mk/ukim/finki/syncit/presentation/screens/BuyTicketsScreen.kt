@@ -2,11 +2,8 @@ package mk.ukim.finki.syncit.presentation.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -14,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.mock.MockData
-import mk.ukim.finki.syncit.data.model.Event
+import mk.ukim.finki.syncit.utils.TopBarUtils
 import mk.ukim.finki.syncit.utils.toSimpleFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,12 +34,10 @@ fun BuyTicketsScreen(eventId: String, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Buy Tickets") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
+                title = { TopBarUtils.CustomTitle("Buy Tickets") },
+                navigationIcon = { TopBarUtils.CustomBackAction(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                colors = TopBarUtils.CustomBackground(),
             )
         },
         content = { innerPadding ->

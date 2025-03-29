@@ -3,8 +3,6 @@ package mk.ukim.finki.syncit.presentation.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.Event
+import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @Composable
 fun EventDetailsScreen(eventId: String, navController: NavController) {
@@ -25,12 +24,9 @@ fun EventDetailsScreen(eventId: String, navController: NavController) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(event.title) },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
-                    }
+                    title = { TopBarUtils.CustomTitle(event.title) },
+                    navigationIcon = { TopBarUtils.CustomBackAction(navController) },
+                    colors = TopBarUtils.CustomBackground()
                 )
             }
         ) { innerPadding ->

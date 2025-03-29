@@ -16,6 +16,7 @@ import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.enums.Category
 import mk.ukim.finki.syncit.data.model.Venue
 import mk.ukim.finki.syncit.presentation.components.DateTimePicker
+import mk.ukim.finki.syncit.utils.TopBarUtils
 import mk.ukim.finki.syncit.utils.toFormattedDate
 import mk.ukim.finki.syncit.utils.toFormattedTime
 
@@ -45,12 +46,10 @@ fun AddEventScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Event") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
+                title = { TopBarUtils.CustomTitle("Add Event") },
+                navigationIcon = { TopBarUtils.CustomBackAction(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                colors = TopBarUtils.CustomBackground(),
             )
         }
     ) { innerPadding ->

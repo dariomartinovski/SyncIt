@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.model.UserModel
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
+import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +29,14 @@ fun ProfileScreen(navController: NavController) {
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Profile") }) },
+        topBar = {
+            TopAppBar(
+                title = { TopBarUtils.CustomTitle("Profile") },
+                navigationIcon = { TopBarUtils.CustomBackAction(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                colors = TopBarUtils.CustomBackground(),
+            )
+        },
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
         Column(

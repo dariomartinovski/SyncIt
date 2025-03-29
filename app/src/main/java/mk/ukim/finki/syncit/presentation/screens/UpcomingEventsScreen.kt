@@ -12,6 +12,7 @@ import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
 import mk.ukim.finki.syncit.presentation.components.SegmentedToggle
 import mk.ukim.finki.syncit.presentation.components.TicketList
+import mk.ukim.finki.syncit.utils.TopBarUtils
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +40,11 @@ fun UpcomingEventsScreen(navController: NavController) {
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("My Events") }) },
+        topBar = { TopAppBar(
+            title = { TopBarUtils.CustomTitle("My Events") },
+            actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+            colors = TopBarUtils.CustomBackground(),
+        ) },
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
         Column(

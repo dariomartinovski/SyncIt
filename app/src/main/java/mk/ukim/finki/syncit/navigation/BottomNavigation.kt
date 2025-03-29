@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
@@ -31,7 +32,7 @@ fun BottomNavigationBar(navController: NavController) {
             }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.PlayArrow, contentDescription = "Upcoming Events") },
+            icon = { Icon(Icons.Default.Event, contentDescription = "Upcoming Events") },
             label = { Text("Upcoming Events") },
             selected = currentRoute == "upcomingEvents",
             onClick = {

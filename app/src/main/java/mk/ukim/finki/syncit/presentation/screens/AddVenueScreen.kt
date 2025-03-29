@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mk.ukim.finki.syncit.R
 import mk.ukim.finki.syncit.domain.services.GeocodingService
+import mk.ukim.finki.syncit.utils.TopBarUtils
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -106,12 +107,10 @@ fun AddVenueScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Venue") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
+                title = { TopBarUtils.CustomTitle("Add Venue") },
+                navigationIcon = { TopBarUtils.CustomBackAction(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                colors = TopBarUtils.CustomBackground(),
             )
         }
     ) { innerPadding ->

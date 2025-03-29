@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.*
 import mk.ukim.finki.syncit.utils.QRCodeGenerator
+import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @Composable
 fun TicketDetailsScreen(ticketId: String, navController: NavController) {
@@ -43,12 +44,10 @@ fun TicketDetailsScreen(ticketId: String, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ticket Details") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
+                title = { TopBarUtils.CustomTitle("Ticket Details") },
+                navigationIcon = { TopBarUtils.CustomBackAction(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                colors = TopBarUtils.CustomBackground(),
             )
         },
         content = { innerPadding ->

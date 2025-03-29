@@ -10,13 +10,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.automirrored.outlined.ViewList
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.ui.unit.dp
 import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
 import mk.ukim.finki.syncit.presentation.components.EventsMap
 import mk.ukim.finki.syncit.presentation.components.ExpandableFAB
+import mk.ukim.finki.syncit.utils.TopBarUtils
 
 
 @Composable
@@ -27,15 +29,14 @@ fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("SyncIt") },
+                title = { TopBarUtils.CustomTitle("SyncIt") },
                 actions = {
-                    IconButton(onClick = { isListView = !isListView }) {
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = "Toggle View"
-                        )
-                    }
-                }
+                    TopBarUtils.CustomSuffixIconButton("Toggle View",
+                        if (isListView) Icons.Default.Map else Icons.AutoMirrored.Outlined.ViewList,
+                        { isListView = !isListView })
+                    TopBarUtils.CustomLoginLogoutIconButton(navController)
+                },
+                colors = TopBarUtils.CustomBackground(),
             )
         },
         floatingActionButton = {
@@ -51,14 +52,6 @@ fun HomeScreen(navController: NavController) {
                 .padding(16.dp)
         ) {
             Column {
-
-                Button(onClick = { navController.navigate("scanTickets") }) {
-                    Text("Scan tickets here")
-                }
-
-                Button(onClick = { navController.navigate("login") }) {
-                    Text("Go to Login")
-                }
                 Text("Events")
                 if (isListView) {
                     EventList(events = events, navController = navController)
