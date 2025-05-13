@@ -6,28 +6,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
 import mk.ukim.finki.syncit.presentation.components.SegmentedToggle
+import mk.ukim.finki.syncit.presentation.viewmodel.UpcomingEventsViewModel
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
-import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpcomingEventsScreen(navController: NavController) {
-    var createdTab by remember { mutableStateOf(0) } // 0 = Upcoming, 1 = History
+fun UpcomingEventsScreen(navController: NavController, viewModel: UpcomingEventsViewModel = viewModel()) {
 
-    val userId = "current_user_id" // Replace with actual user ID retrieval
-    //TODO make the call to fetch user-created events
-    val createdEvents = MockData.events.take(5)
-
-    val createdFiltered = createdEvents.filter {
-        if (createdTab == 0) it.startTime.isAfter(LocalDateTime.now())
-        else it.startTime.isBefore(LocalDateTime.now())
-    }
+    val createdTab by viewModel.createdTab.collectAsState()
+    val createdFiltered = viewModel.getFilteredEvents()
 
     Scaffold(
         topBar = {
@@ -56,7 +49,7 @@ fun UpcomingEventsScreen(navController: NavController) {
                 SegmentedToggle(
                     options = listOf("Upcoming", "History"),
                     selectedIndex = createdTab,
-                    onOptionSelected = { createdTab = it }
+                    onOptionSelected = { viewModel.setCreatedTab(it) }
                 )
             }
 

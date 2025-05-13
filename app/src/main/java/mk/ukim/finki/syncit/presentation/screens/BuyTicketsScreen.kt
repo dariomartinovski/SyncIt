@@ -9,21 +9,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import mk.ukim.finki.syncit.data.mock.MockData
+import mk.ukim.finki.syncit.presentation.viewmodel.BuyTicketsViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.BuyTicketsViewModelFactory
 import mk.ukim.finki.syncit.utils.TopBarUtils
 import mk.ukim.finki.syncit.utils.toSimpleFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuyTicketsScreen(eventId: String, navController: NavController) {
-    val event = MockData.events.find { it.id == eventId }
+    val viewModel: BuyTicketsViewModel = viewModel(factory = BuyTicketsViewModelFactory(eventId))
+    val event = viewModel.event
 
-    // State for the quantity of tickets
-    var quantity by remember { mutableStateOf(1) }
-
-    // State for the total amount
-    val totalAmount = event?.entryFee?.times(quantity) ?: 0
+    var quantity by remember { mutableStateOf(viewModel.quantity) }
 
     // Function to simulate ticket reservation
     fun reserveTickets() {
@@ -75,7 +74,7 @@ fun BuyTicketsScreen(eventId: String, navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Total: \$${totalAmount}",
+                    text = "Total: \$${viewModel.totalAmount}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black

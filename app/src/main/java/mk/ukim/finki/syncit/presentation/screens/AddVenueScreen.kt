@@ -15,12 +15,14 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mk.ukim.finki.syncit.R
 import mk.ukim.finki.syncit.domain.services.GeocodingService
+import mk.ukim.finki.syncit.presentation.viewmodel.AddVenueViewModel
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 import org.osmdroid.config.Configuration
@@ -31,13 +33,14 @@ import org.osmdroid.views.overlay.Marker
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
-fun AddVenueScreen(navController: NavController) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var maxCapacity by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
-    var latitude by remember { mutableStateOf<Double?>(null) }
-    var longitude by remember { mutableStateOf<Double?>(null) }
+fun AddVenueScreen(navController: NavController, viewModel: AddVenueViewModel = viewModel()) {
+    val title = viewModel.title
+    val description = viewModel.description
+    val maxCapacity = viewModel.maxCapacity
+    val location = viewModel.location
+    val latitude = viewModel.latitude
+    val longitude = viewModel.longitude
+
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var marker by remember { mutableStateOf<Marker?>(null) }
     val coroutineScope = rememberCoroutineScope()
@@ -46,12 +49,12 @@ fun AddVenueScreen(navController: NavController) {
     val SELECTED_POINT_MAP_ZOOM_SPEED = 2L
 
     fun setLatitudeAndLongitudeFromGeoPoint(point: GeoPoint) {
-        latitude = point.latitude
-        longitude = point.longitude
+        viewModel.latitude = point.latitude
+        viewModel.longitude = point.longitude
     }
 
     fun onLocationSelected(lat: Double, lon: Double) {
-        location = "Fetching address..."
+        viewModel.location = "Fetching address..."
         coroutineScope.launch {
             val address = withContext(Dispatchers.IO) {
                 GeocodingService.getAddressFromCoordinates(lat, lon)
@@ -60,7 +63,7 @@ fun AddVenueScreen(navController: NavController) {
             setLatitudeAndLongitudeFromGeoPoint(centerGeoPoint)
             mapView?.controller?.setCenter(centerGeoPoint)
             mapView?.controller?.setZoom(SELECTED_POINT_MAP_ZOOM)
-            location = address ?: "Unknown Location"
+            viewModel.location = address ?: "Unknown Location"
         }
     }
 
@@ -83,7 +86,7 @@ fun AddVenueScreen(navController: NavController) {
                             marker = Marker(map).apply {
                                 position = point
 
-                                title = "Selected Location"
+                                viewModel.title = "Selected Location"
                                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                 icon = mapView!!.context.getDrawable(R.drawable.location_on_24px)
                             }
@@ -99,10 +102,6 @@ fun AddVenueScreen(navController: NavController) {
                 }
             }
         }
-    }
-
-    fun _saveVenue() {
-        //TODO write code here
     }
 
     Scaffold(
@@ -127,7 +126,7 @@ fun AddVenueScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = title,
-                onValueChange = { title = it },
+                onValueChange = { viewModel.title = it },
                 label = { Text("Venue Title") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -136,7 +135,7 @@ fun AddVenueScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = description,
-                onValueChange = { description = it },
+                onValueChange = { viewModel.description = it },
                 label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -145,7 +144,7 @@ fun AddVenueScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = maxCapacity,
-                onValueChange = { maxCapacity = it },
+                onValueChange = { viewModel.maxCapacity = it },
                 label = { Text("Max Capacity") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
@@ -155,7 +154,7 @@ fun AddVenueScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = location,
-                onValueChange = { location = it },
+                onValueChange = { viewModel.location = it },
                 label = { Text("Location") },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
@@ -218,7 +217,7 @@ fun AddVenueScreen(navController: NavController) {
 
             Button(
                 onClick = {
-                    _saveVenue()
+                    viewModel.saveVenue()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

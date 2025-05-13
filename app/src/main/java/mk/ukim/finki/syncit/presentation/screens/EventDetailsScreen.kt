@@ -11,26 +11,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.Event
+import mk.ukim.finki.syncit.presentation.viewmodel.EventDetailsViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.EventDetailsViewModelFactory
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @Composable
 fun EventDetailsScreen(eventId: String, navController: NavController) {
-    val event = MockData.events.find { it.id == eventId }
+    val viewModel: EventDetailsViewModel = viewModel(
+        factory = EventDetailsViewModelFactory(eventId)
+    )
+
+    val event by viewModel.event.collectAsState()
 
     if (event != null) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { TopBarUtils.CustomTitle(event.title) },
+                    title = { TopBarUtils.CustomTitle(event!!.title) },
                     navigationIcon = { TopBarUtils.CustomBackAction(navController) },
                     colors = TopBarUtils.CustomBackground()
                 )
             }
         ) { innerPadding ->
-            EventDetailsContent(event, Modifier.padding(innerPadding), navController)
+            EventDetailsContent(event!!, Modifier.padding(innerPadding), navController)
         }
     } else {
         Box(

@@ -7,9 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -134,7 +133,7 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.List, contentDescription = "Category", tint = Color(0xFF0D47A1)) // Category icon
+                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Category", tint = Color(0xFF0D47A1)) // Category icon
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Category: ${event.category.label}",

@@ -4,7 +4,6 @@ package mk.ukim.finki.syncit.presentation.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,6 +15,8 @@ import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.enums.Category
 import mk.ukim.finki.syncit.data.model.Venue
 import mk.ukim.finki.syncit.presentation.components.DateTimePicker
+import mk.ukim.finki.syncit.presentation.viewmodel.AddEventViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 import mk.ukim.finki.syncit.utils.toFormattedDate
@@ -23,26 +24,17 @@ import mk.ukim.finki.syncit.utils.toFormattedTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEventScreen(navController: NavController) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var entryFee by remember { mutableStateOf("") }
-    var selectedVenue by remember { mutableStateOf<Venue?>(null) }
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
-    var selectedTime by remember { mutableStateOf<Pair<Int, Int>?>(null) }
-    var expandedVenue by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+fun AddEventScreen(navController: NavController, viewModel: AddEventViewModel = viewModel()) {
     var expandedCategory by remember { mutableStateOf(false) }
+    var expandedVenue by remember { mutableStateOf(false) }
 
-    fun _saveEvent() {
-        println(title)
-        println(description)
-        println(selectedVenue)
-        println(entryFee)
-        println(selectedDate?.toFormattedDate())
-        println(selectedTime?.toFormattedTime())
-        println(selectedCategory)
-    }
+    val title = viewModel.title
+    val description = viewModel.description
+    val entryFee = viewModel.entryFee
+    val selectedVenue = viewModel.selectedVenue
+    val selectedDate = viewModel.selectedDate
+    val selectedTime = viewModel.selectedTime
+    val selectedCategory = viewModel.selectedCategory
 
     Scaffold(
         topBar = {
@@ -66,7 +58,7 @@ fun AddEventScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = title,
-                onValueChange = { title = it },
+                onValueChange = { viewModel.title = it },
                 label = { Text("Event Title") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -75,7 +67,7 @@ fun AddEventScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = description,
-                onValueChange = { description = it },
+                onValueChange = { viewModel.description = it },
                 label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -84,7 +76,7 @@ fun AddEventScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = entryFee,
-                onValueChange = { entryFee = it },
+                onValueChange = { viewModel.entryFee = it },
                 label = { Text("Entry Fee") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
@@ -96,8 +88,8 @@ fun AddEventScreen(navController: NavController) {
                 selectedDate = selectedDate,
                 selectedTime = selectedTime,
                 onDateTimeSelected = { date, time ->
-                    selectedDate = date
-                    selectedTime = time
+                    viewModel.selectedDate = date
+                    viewModel.selectedTime = time
                 }
             )
 
@@ -131,7 +123,7 @@ fun AddEventScreen(navController: NavController) {
                         DropdownMenuItem(
                             text = { Text(venue.title) },
                             onClick = {
-                                selectedVenue = venue
+                                viewModel.selectedVenue = venue
                                 expandedVenue = false
                             }
                         )
@@ -169,7 +161,7 @@ fun AddEventScreen(navController: NavController) {
                         DropdownMenuItem(
                             text = { Text(category.label) },
                             onClick = {
-                                selectedCategory = category
+                                viewModel.selectedCategory = category
                                 expandedCategory = false
                             }
                         )
@@ -180,7 +172,7 @@ fun AddEventScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(30.dp))
 
             Button(
-                onClick = { _saveEvent() },
+                onClick = { viewModel.saveEvent() },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save Event")

@@ -2,6 +2,7 @@
 
 package mk.ukim.finki.syncit.presentation.screens
 
+import HomeViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
@@ -23,11 +25,14 @@ import mk.ukim.finki.syncit.presentation.components.ExpandableFAB
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, viewModel: HomeViewModel = viewModel()) {
     var isListView by remember { mutableStateOf(true) }
-    val events = MockData.events
+    val events = viewModel.events
+
+//    val eventService = remember { EventService() } // or provide it however you currently do
+//    val viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(eventService))
 
     Scaffold(
         topBar = {
@@ -60,9 +65,9 @@ fun HomeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (isListView) {
-                    EventList(events = events, navController = navController)
+                    EventList(events = events.value, navController = navController)
                 } else {
-                    EventsMap(events = events, navController = navController)
+                    EventsMap(events = events.value, navController = navController)
                 }
             }
         }
