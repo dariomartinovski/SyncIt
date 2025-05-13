@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.SegmentedToggle
 import mk.ukim.finki.syncit.presentation.components.TicketList
+import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.UpcomingTicketsViewModel
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
@@ -19,8 +20,10 @@ import mk.ukim.finki.syncit.utils.TopBarUtils
 @Composable
 fun UpcomingTicketsScreen(
     navController: NavController,
+    authViewModel: AuthViewModel,
     viewModel: UpcomingTicketsViewModel = viewModel()
 ) {
+    val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
     val tickets by viewModel.filteredTickets.collectAsState()
 
@@ -28,7 +31,7 @@ fun UpcomingTicketsScreen(
         topBar = {
             TopAppBar(
                 title = { TopBarUtils.CustomTitle("My Tickets") },
-                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController, isUserLoggedIn) },
                 colors = TopBarUtils.CustomBackground(),
             )
         },

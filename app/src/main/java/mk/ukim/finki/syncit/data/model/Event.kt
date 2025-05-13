@@ -8,7 +8,7 @@ data class Event(
     val title: String,
     val description: String,
     val category: Category,
-    val host: UserModel,
+    val host: User,
     val venue: Venue,
     val entryFee: Long,
     val startTime: LocalDateTime,

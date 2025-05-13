@@ -13,18 +13,21 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.enums.Category
-import mk.ukim.finki.syncit.data.model.Venue
 import mk.ukim.finki.syncit.presentation.components.DateTimePicker
 import mk.ukim.finki.syncit.presentation.viewmodel.AddEventViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
-import mk.ukim.finki.syncit.utils.toFormattedDate
-import mk.ukim.finki.syncit.utils.toFormattedTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEventScreen(navController: NavController, viewModel: AddEventViewModel = viewModel()) {
+fun AddEventScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel,
+    viewModel: AddEventViewModel = viewModel()
+) {
+    val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
     var expandedCategory by remember { mutableStateOf(false) }
     var expandedVenue by remember { mutableStateOf(false) }
 
@@ -41,7 +44,7 @@ fun AddEventScreen(navController: NavController, viewModel: AddEventViewModel = 
             TopAppBar(
                 title = { TopBarUtils.CustomTitle("Add Event") },
                 navigationIcon = { TopBarUtils.CustomBackAction(navController) },
-                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController, isUserLoggedIn) },
                 colors = TopBarUtils.CustomBackground(),
             )
         }

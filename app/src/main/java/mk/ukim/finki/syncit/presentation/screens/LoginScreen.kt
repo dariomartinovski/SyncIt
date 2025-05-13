@@ -24,13 +24,31 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import mk.ukim.finki.syncit.data.repository.AuthRepository
+import mk.ukim.finki.syncit.presentation.viewmodel.LoginUiState
+import mk.ukim.finki.syncit.presentation.viewmodel.LoginViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.LoginViewModelFactory
+import mk.ukim.finki.syncit.utils.DarkBlueColor
+import mk.ukim.finki.syncit.utils.DeepBlueColor
+import mk.ukim.finki.syncit.utils.LightSilverColor
+import mk.ukim.finki.syncit.utils.LightTextColor
+import mk.ukim.finki.syncit.utils.SilverColor
 
 @Composable
 fun LoginScreen(navController: NavController) {
+    val viewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(
+            AuthRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())
+        )
+    )
+
     Column(modifier = Modifier.fillMaxSize()) {
         HeaderSection()
-        LoginForm(navController)
+        LoginForm(navController, viewModel)
     }
 }
 
@@ -39,7 +57,7 @@ fun HeaderSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF003366))
+            .background(DeepBlueColor)
             .padding(top = 125.dp, start = 50.dp, bottom = 50.dp)
         ,
         horizontalAlignment = Alignment.Start
@@ -47,24 +65,26 @@ fun HeaderSection() {
         Text(
             text = "Sign in to your\nAccount",
             fontSize = 40.sp,
-            color = Color.LightGray,
+            color = LightSilverColor,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = "Sign in to your Account",
             fontSize = 14.sp,
-            color = Color.Gray,
+            color = SilverColor,
             fontWeight = FontWeight.Bold
         )
     }
 }
 
 @Composable
-fun LoginForm(navController: NavController) {
+fun LoginForm(navController: NavController, viewModel: LoginViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    val loginState by viewModel.loginState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -79,6 +99,7 @@ fun LoginForm(navController: NavController) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
@@ -91,28 +112,40 @@ fun LoginForm(navController: NavController) {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = "Toggle password visibility"
+                        contentDescription = null
                     )
                 }
             },
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { navController.navigate("home") },
+            onClick = { viewModel.login(email, password) },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF003366)
-            ),
+            colors = ButtonDefaults.buttonColors(containerColor = DeepBlueColor),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text("Login", color = Color.White, fontSize = 14.sp)
+            Text("Login", color = LightTextColor, fontSize = 14.sp)
         }
-        Spacer(modifier = Modifier.height(12.dp))
 
+        when (val state = loginState) {
+            is LoginUiState.Loading -> Text("Logging in...")
+            is LoginUiState.Error -> Text("Error: ${state.message}", color = Color.Red)
+            is LoginUiState.Success -> {
+                LaunchedEffect(Unit) {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            }
+            else -> {}
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
         TextButton(onClick = { navController.navigate("register") }) {
-            Text("Don't have an account? Register", color = Color(0xFF003366), fontSize = 14.sp)
+            Text("Don't have an account? Register", color = DarkBlueColor, fontSize = 14.sp)
         }
     }
 }

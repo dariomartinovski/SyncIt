@@ -8,23 +8,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import mk.ukim.finki.syncit.data.model.UserModel
+import mk.ukim.finki.syncit.data.model.User
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
+import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
+    val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
     var user by remember {
         mutableStateOf(
-            UserModel(
+            User(
                 id = "1",
                 firstName = "John",
                 lastName = "Doe",
-                phone = "123-456-7890",
-                email = "johndoe@example.com",
-                password = ""
+                phoneNumber = "123-456-7890",
+                email = "johndoe@example.com"
             )
         )
     }
@@ -33,7 +37,7 @@ fun ProfileScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = { TopBarUtils.CustomTitle("Profile") },
-                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController, isUserLoggedIn) },
                 colors = TopBarUtils.CustomBackground(),
             )
         },
@@ -73,8 +77,8 @@ fun ProfileScreen(navController: NavController) {
 
             // Phone
             OutlinedTextField(
-                value = user.phone,
-                onValueChange = { user = user.copy(phone = it) },
+                value = user.phoneNumber,
+                onValueChange = { user = user.copy(phoneNumber = it) },
                 label = { Text("Phone Number") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
                 singleLine = true,

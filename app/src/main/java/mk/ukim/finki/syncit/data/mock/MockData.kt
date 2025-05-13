@@ -3,36 +3,33 @@ package mk.ukim.finki.syncit.data.mock
 import mk.ukim.finki.syncit.data.model.enums.Category
 import mk.ukim.finki.syncit.data.model.Event
 import mk.ukim.finki.syncit.data.model.Ticket
-import mk.ukim.finki.syncit.data.model.UserModel
+import mk.ukim.finki.syncit.data.model.User
 import mk.ukim.finki.syncit.data.model.Venue
 import mk.ukim.finki.syncit.data.model.generateUniqueCode
 import java.time.LocalDateTime
 
 object MockData {
     val users = listOf(
-        UserModel(
+        User(
             id = "user1",
             firstName = "Aleksandar",
             lastName = "Petkov",
-            phone = "+38970123456",
-            email = "aleksandar@example.com",
-            password = "Pass123!"
+            phoneNumber = "+38970123456",
+            email = "aleksandar@example.com"
         ),
-        UserModel(
+        User(
             id = "user2",
             firstName = "Elena",
             lastName = "Trajkovska",
-            phone = "+38971234567",
-            email = "elena@example.com",
-            password = "SecurePass!"
+            phoneNumber = "+38971234567",
+            email = "elena@example.com"
         ),
-        UserModel(
+        User(
             id = "user3",
             firstName = "Marko",
             lastName = "Jovanov",
-            phone = "+38975234567",
-            email = "marko@example.com",
-            password = "StrongPass@123"
+            phoneNumber = "+38975234567",
+            email = "marko@example.com"
         )
     )
 

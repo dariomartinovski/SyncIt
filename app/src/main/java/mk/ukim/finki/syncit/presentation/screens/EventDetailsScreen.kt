@@ -13,14 +13,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.Event
 import mk.ukim.finki.syncit.presentation.viewmodel.EventDetailsViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.EventDetailsViewModelFactory
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @Composable
-fun EventDetailsScreen(eventId: String, navController: NavController) {
+fun EventDetailsScreen(
+    eventId: String,
+    navController: NavController
+) {
     val viewModel: EventDetailsViewModel = viewModel(
         factory = EventDetailsViewModelFactory(eventId)
     )

@@ -28,7 +28,10 @@ import mk.ukim.finki.syncit.utils.QRCodeGenerator
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @Composable
-fun TicketDetailsScreen(ticketId: String, navController: NavController) {
+fun TicketDetailsScreen(
+    ticketId: String,
+    navController: NavController
+) {
     val ticket = MockData.tickets.find { it.id == ticketId }
 
     val qrGenerator = remember { QRCodeGenerator() }
@@ -45,7 +48,6 @@ fun TicketDetailsScreen(ticketId: String, navController: NavController) {
             TopAppBar(
                 title = { TopBarUtils.CustomTitle("Ticket Details") },
                 navigationIcon = { TopBarUtils.CustomBackAction(navController) },
-                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
                 colors = TopBarUtils.CustomBackground(),
             )
         },

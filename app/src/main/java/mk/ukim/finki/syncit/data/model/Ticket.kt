@@ -4,9 +4,9 @@ import mk.ukim.finki.syncit.data.model.enums.TicketStatus
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-data class Ticket (
+data class Ticket(
     val id: String,
-    val user: UserModel,
+    val user: User,
     val event: Event,
     val uniqueCode: String,
     val ticketStatus: TicketStatus = TicketStatus.VALID

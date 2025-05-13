@@ -18,7 +18,10 @@ import mk.ukim.finki.syncit.utils.toSimpleFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BuyTicketsScreen(eventId: String, navController: NavController) {
+fun BuyTicketsScreen(
+    eventId: String,
+    navController: NavController
+) {
     val viewModel: BuyTicketsViewModel = viewModel(factory = BuyTicketsViewModelFactory(eventId))
     val event = viewModel.event
 
@@ -35,7 +38,6 @@ fun BuyTicketsScreen(eventId: String, navController: NavController) {
             TopAppBar(
                 title = { TopBarUtils.CustomTitle("Buy Tickets") },
                 navigationIcon = { TopBarUtils.CustomBackAction(navController) },
-                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
                 colors = TopBarUtils.CustomBackground(),
             )
         },

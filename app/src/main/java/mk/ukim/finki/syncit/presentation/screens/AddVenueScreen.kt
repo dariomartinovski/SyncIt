@@ -23,6 +23,7 @@ import kotlinx.coroutines.withContext
 import mk.ukim.finki.syncit.R
 import mk.ukim.finki.syncit.domain.services.GeocodingService
 import mk.ukim.finki.syncit.presentation.viewmodel.AddVenueViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 import org.osmdroid.config.Configuration
@@ -33,7 +34,13 @@ import org.osmdroid.views.overlay.Marker
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
-fun AddVenueScreen(navController: NavController, viewModel: AddVenueViewModel = viewModel()) {
+fun AddVenueScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel,
+    viewModel: AddVenueViewModel = viewModel()
+) {
+    val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
+
     val title = viewModel.title
     val description = viewModel.description
     val maxCapacity = viewModel.maxCapacity
@@ -109,7 +116,7 @@ fun AddVenueScreen(navController: NavController, viewModel: AddVenueViewModel = 
             TopAppBar(
                 title = { TopBarUtils.CustomTitle("Add Venue") },
                 navigationIcon = { TopBarUtils.CustomBackAction(navController) },
-                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController) },
+                actions = { TopBarUtils.CustomLoginLogoutIconButton(navController, isUserLoggedIn) },
                 colors = TopBarUtils.CustomBackground(),
             )
         }
