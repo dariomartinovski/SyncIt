@@ -6,24 +6,20 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import java.time.*
 import mk.ukim.finki.syncit.utils.toFormattedDate
 import mk.ukim.finki.syncit.utils.toFormattedTime
-import java.util.*
 
 @Composable
 fun DateTimePicker(
-    selectedDate: Long?,
-    selectedTime: Pair<Int, Int>?,
-    onDateTimeSelected: (Long?, Pair<Int, Int>?) -> Unit
+    selectedDate: LocalDate,
+    selectedTime: LocalTime,
+    onDateTimeSelected: (LocalDate, LocalTime) -> Unit
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
-    val formattedDateTime = selectedDate?.let { date ->
-        val dateString = date.toFormattedDate()
-        val timeString = selectedTime?.toFormattedTime() ?: "Select Time"
-        "$dateString $timeString"
-    } ?: ""
+    val formattedDateTime = "${selectedDate.toFormattedDate()} ${selectedTime.toFormattedTime()}"
 
     OutlinedTextField(
         value = formattedDateTime,
@@ -40,22 +36,21 @@ fun DateTimePicker(
 
     if (showDatePicker) {
         DatePickerModal(
+            initialDate = selectedDate,
             onDateSelected = { date ->
                 onDateTimeSelected(date, selectedTime)
                 showDatePicker = false
+                showTimePicker = true
             },
-            onDismiss = { showDatePicker = false }
+            onDismiss = {
+                showDatePicker = false
+            }
         )
-    }
-
-    LaunchedEffect(selectedDate) {
-        if (selectedDate != null) {
-            showTimePicker = true
-        }
     }
 
     if (showTimePicker) {
         TimePickerModal(
+            initialTime = selectedTime,
             onConfirm = { time ->
                 onDateTimeSelected(selectedDate, time)
                 showTimePicker = false
@@ -68,17 +63,29 @@ fun DateTimePicker(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
+    initialDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val datePickerState = rememberDatePickerState(initialDisplayMode = DisplayMode.Picker)
+    val zoneId = ZoneId.systemDefault()
+    val initialMillis = initialDate.atStartOfDay(zoneId).toInstant().toEpochMilli()
+
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = initialMillis,
+        initialDisplayMode = DisplayMode.Picker
+    )
 
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
-                onDismiss()
+                val millis = datePickerState.selectedDateMillis
+                val selected = millis?.let {
+                    Instant.ofEpochMilli(it).atZone(zoneId).toLocalDate()
+                }
+                if (selected != null) {
+                    onDateSelected(selected)
+                }
             }) {
                 Text("OK")
             }
@@ -96,14 +103,13 @@ fun DatePickerModal(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePickerModal(
-    onConfirm: (Pair<Int, Int>) -> Unit,
+    initialTime: LocalTime,
+    onConfirm: (LocalTime) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val currentTime = Calendar.getInstance()
-
     val timePickerState = rememberTimePickerState(
-        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE),
+        initialHour = initialTime.hour,
+        initialMinute = initialTime.minute,
         is24Hour = true,
     )
 
@@ -111,7 +117,8 @@ fun TimePickerModal(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onConfirm(timePickerState.hour to timePickerState.minute)
+                val selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                onConfirm(selectedTime)
             }) {
                 Text("OK")
             }

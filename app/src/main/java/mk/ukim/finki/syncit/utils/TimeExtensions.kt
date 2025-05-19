@@ -5,13 +5,22 @@ import java.util.Date
 import java.util.Locale
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 fun Long.toFormattedDate(pattern: String = "yyyy-MM-dd"): String {
     val formatter = SimpleDateFormat(pattern, Locale.getDefault())
     return formatter.format(Date(this))
 }
+
+fun LocalDate.toFormattedDate(): String =
+    this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+
+fun LocalTime.toFormattedTime(): String =
+    this.format(DateTimeFormatter.ofPattern("HH:mm"))
+
 
 @SuppressLint("DefaultLocale")
 fun Pair<Int, Int>.toFormattedTime(): String {

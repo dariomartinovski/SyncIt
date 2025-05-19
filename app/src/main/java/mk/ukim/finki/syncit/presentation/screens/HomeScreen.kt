@@ -2,7 +2,6 @@
 
 package mk.ukim.finki.syncit.presentation.screens
 
-import HomeViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,15 +16,13 @@ import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import mk.ukim.finki.syncit.data.repository.AuthRepository
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
 import mk.ukim.finki.syncit.presentation.components.EventsMap
 import mk.ukim.finki.syncit.presentation.components.ExpandableFAB
 import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
-import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModelFactory
+import mk.ukim.finki.syncit.presentation.viewmodel.HomeViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.HomeViewModelFactory
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
@@ -33,9 +30,10 @@ import mk.ukim.finki.syncit.utils.TopBarUtils
 @Composable
 fun HomeScreen(
     navController: NavController,
-    authViewModel: AuthViewModel,
-    viewModel: HomeViewModel = viewModel()
+    authViewModel: AuthViewModel
 ) {
+    val viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory())
+
     val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
     var isListView by remember { mutableStateOf(true) }
     val events = viewModel.events

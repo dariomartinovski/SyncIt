@@ -22,7 +22,7 @@ import mk.ukim.finki.syncit.presentation.screens.TicketDetailsScreen
 import mk.ukim.finki.syncit.presentation.screens.UpcomingEventsScreen
 import mk.ukim.finki.syncit.presentation.screens.UpcomingTicketsScreen
 import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
-import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModelFactory
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.AuthViewModelFactory
 
 @Composable
 fun AppNavigation() {
@@ -35,7 +35,7 @@ fun AppNavigation() {
     )
 
     NavHost(navController = navController, startDestination = "home") {
-        composable("login") { LoginScreen(navController) }
+        composable("login") { LoginScreen(navController, authViewModel) }
         composable("register") { RegisterScreen(navController) }
         composable("home") { HomeScreen(navController, authViewModel) }
         composable("logout") { LogoutScreen(navController, authViewModel) }

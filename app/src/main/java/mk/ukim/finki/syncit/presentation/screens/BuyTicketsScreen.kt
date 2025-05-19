@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.presentation.viewmodel.BuyTicketsViewModel
-import mk.ukim.finki.syncit.presentation.viewmodel.BuyTicketsViewModelFactory
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.BuyTicketsViewModelFactory
 import mk.ukim.finki.syncit.utils.TopBarUtils
 import mk.ukim.finki.syncit.utils.toSimpleFormat
 
@@ -27,7 +27,6 @@ fun BuyTicketsScreen(
 
     var quantity by remember { mutableStateOf(viewModel.quantity) }
 
-    // Function to simulate ticket reservation
     fun reserveTickets() {
         // Print the quantity of tickets in the console (or handle further actions)
         println("Reserved $quantity tickets for ${event?.title}")

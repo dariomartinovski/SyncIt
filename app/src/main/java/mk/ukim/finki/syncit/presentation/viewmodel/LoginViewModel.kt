@@ -1,7 +1,6 @@
 package mk.ukim.finki.syncit.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,15 +24,6 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 }
-
-class LoginViewModelFactory(
-    private val authRepository: AuthRepository
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LoginViewModel(authRepository) as T
-    }
-}
-
 
 sealed class LoginUiState {
     object Idle : LoginUiState()

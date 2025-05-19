@@ -4,9 +4,10 @@ package mk.ukim.finki.syncit.presentation.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,6 +23,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mk.ukim.finki.syncit.R
 import mk.ukim.finki.syncit.domain.services.GeocodingService
+import mk.ukim.finki.syncit.presentation.components.ShowErrorDialog
+import mk.ukim.finki.syncit.presentation.components.ShowSuccessDialog
 import mk.ukim.finki.syncit.presentation.viewmodel.AddVenueViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.utils.TextUtils
@@ -32,6 +35,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 fun AddVenueScreen(
@@ -41,16 +45,14 @@ fun AddVenueScreen(
 ) {
     val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
-    val title = viewModel.title
-    val description = viewModel.description
-    val maxCapacity = viewModel.maxCapacity
-    val location = viewModel.location
-    val latitude = viewModel.latitude
-    val longitude = viewModel.longitude
-
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var marker by remember { mutableStateOf<Marker?>(null) }
     val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
+
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     val SELECTED_POINT_MAP_ZOOM = 16.0
     val SELECTED_POINT_MAP_ZOOM_SPEED = 2L
@@ -126,13 +128,14 @@ fun AddVenueScreen(
                 .padding(innerPadding)
                 .padding(16.dp)
                 .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
             TextUtils.LargeTitle("Add Venue")
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = title,
+                value = viewModel.title,
                 onValueChange = { viewModel.title = it },
                 label = { Text("Venue Title") },
                 modifier = Modifier.fillMaxWidth()
@@ -141,7 +144,7 @@ fun AddVenueScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = description,
+                value = viewModel.description,
                 onValueChange = { viewModel.description = it },
                 label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth()
@@ -150,7 +153,7 @@ fun AddVenueScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = maxCapacity,
+                value = viewModel.maxCapacity,
                 onValueChange = { viewModel.maxCapacity = it },
                 label = { Text("Max Capacity") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -160,14 +163,14 @@ fun AddVenueScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = location,
+                value = viewModel.location,
                 onValueChange = { viewModel.location = it },
                 label = { Text("Location") },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     IconButton(onClick = {
-                        if (location.isNotEmpty()) {
-                            updateLocationOnMap(location)
+                        if (viewModel.location.isNotEmpty()) {
+                            updateLocationOnMap(viewModel.location)
                         }
                     }) {
                         Icon(Icons.Default.Search, contentDescription = "Search Location")
@@ -224,12 +227,40 @@ fun AddVenueScreen(
 
             Button(
                 onClick = {
-                    viewModel.saveVenue()
+                    viewModel.saveVenue { success, error ->
+                        if (success) {
+                            showSuccessDialog = true
+                        } else {
+                            errorMessage = error ?: "An unexpected error occurred."
+                            showErrorDialog = true
+                        }
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save Venue")
             }
         }
+        if (showSuccessDialog) {
+            ShowSuccessDialog(
+                title = "Success",
+                message = "Venue has been saved successfully!",
+                onConfirm = {
+                    showSuccessDialog = false
+                    navController.navigate("home") {
+                        popUpTo("addVenue") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        if (showErrorDialog) {
+            ShowErrorDialog(
+                title = "Error",
+                message = errorMessage,
+                onDismiss = { showErrorDialog = false }
+            )
+        }
+
     }
 }

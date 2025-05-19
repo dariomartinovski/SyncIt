@@ -15,7 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.model.Event
 import mk.ukim.finki.syncit.presentation.viewmodel.EventDetailsViewModel
-import mk.ukim.finki.syncit.presentation.viewmodel.EventDetailsViewModelFactory
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.EventDetailsViewModelFactory
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @Composable

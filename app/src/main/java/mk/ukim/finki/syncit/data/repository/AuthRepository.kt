@@ -60,4 +60,20 @@ class AuthRepository(
     fun getCurrentUserEmail(): String? {
         return firebaseAuth.currentUser?.email
     }
+
+    fun getCurrentUserId(): String? {
+        return firebaseAuth.currentUser?.uid
+    }
+
+    suspend fun getCurrentUserProfile(): Result<User> {
+        val userId = getCurrentUserId() ?: return Result.failure(Exception("Not logged in"))
+        return try {
+            val snapshot = firestore.collection("users").document(userId).get().await()
+            val user = snapshot.toObject(User::class.java)?.copy(id = userId)
+            if (user != null) Result.success(user) else Result.failure(Exception("User not found"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }

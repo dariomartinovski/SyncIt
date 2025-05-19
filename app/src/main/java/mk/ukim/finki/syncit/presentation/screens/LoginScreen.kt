@@ -7,13 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,9 +23,10 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import mk.ukim.finki.syncit.data.repository.AuthRepository
+import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.LoginUiState
 import mk.ukim.finki.syncit.presentation.viewmodel.LoginViewModel
-import mk.ukim.finki.syncit.presentation.viewmodel.LoginViewModelFactory
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.LoginViewModelFactory
 import mk.ukim.finki.syncit.utils.DarkBlueColor
 import mk.ukim.finki.syncit.utils.DeepBlueColor
 import mk.ukim.finki.syncit.utils.LightSilverColor
@@ -39,7 +34,10 @@ import mk.ukim.finki.syncit.utils.LightTextColor
 import mk.ukim.finki.syncit.utils.SilverColor
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
     val viewModel: LoginViewModel = viewModel(
         factory = LoginViewModelFactory(
             AuthRepository(FirebaseAuth.getInstance(), FirebaseFirestore.getInstance())
@@ -48,7 +46,7 @@ fun LoginScreen(navController: NavController) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         HeaderSection()
-        LoginForm(navController, viewModel)
+        LoginForm(navController, viewModel, authViewModel)
     }
 }
 
@@ -58,8 +56,7 @@ fun HeaderSection() {
         modifier = Modifier
             .fillMaxWidth()
             .background(DeepBlueColor)
-            .padding(top = 125.dp, start = 50.dp, bottom = 50.dp)
-        ,
+            .padding(top = 125.dp, start = 50.dp, bottom = 50.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
@@ -79,7 +76,11 @@ fun HeaderSection() {
 }
 
 @Composable
-fun LoginForm(navController: NavController, viewModel: LoginViewModel) {
+fun LoginForm(
+    navController: NavController,
+    viewModel: LoginViewModel,
+    authViewModel: AuthViewModel
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -135,6 +136,7 @@ fun LoginForm(navController: NavController, viewModel: LoginViewModel) {
             is LoginUiState.Error -> Text("Error: ${state.message}", color = Color.Red)
             is LoginUiState.Success -> {
                 LaunchedEffect(Unit) {
+                    authViewModel.checkAuthStatus()
                     navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
                     }
