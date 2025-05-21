@@ -11,11 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.enums.Category
 import mk.ukim.finki.syncit.presentation.components.DateTimePicker
 import mk.ukim.finki.syncit.presentation.viewmodel.AddEventViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import mk.ukim.finki.syncit.presentation.components.ShowErrorDialog
+import mk.ukim.finki.syncit.presentation.components.ShowSuccessDialog
 import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
@@ -28,6 +29,13 @@ fun AddEventScreen(
     viewModel: AddEventViewModel = viewModel()
 ) {
     val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
+
+    var showLoginRequiredDialog by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
     var expandedCategory by remember { mutableStateOf(false) }
     var expandedVenue by remember { mutableStateOf(false) }
 
@@ -122,7 +130,7 @@ fun AddEventScreen(
                     expanded = expandedVenue,
                     onDismissRequest = { expandedVenue = false }
                 ) {
-                    MockData.venues.forEach { venue ->
+                    viewModel.venues.forEach { venue ->
                         DropdownMenuItem(
                             text = { Text(venue.title) },
                             onClick = {
@@ -175,11 +183,104 @@ fun AddEventScreen(
             Spacer(modifier = Modifier.height(30.dp))
 
             Button(
-                onClick = { viewModel.saveEvent() },
+                onClick = {
+                    if (isUserLoggedIn) {
+                        println("Current User is")
+                        println(currentUser)
+                        if (currentUser != null) {
+                            viewModel.saveEvent(currentUser!!) { success, error ->
+                                if (success) {
+                                    showSuccessDialog = true
+                                } else {
+                                    errorMessage = error ?: "An unexpected error occurred."
+                                    showErrorDialog = true
+                                }
+                            }
+                        } else {
+                            // Optional: show loading or retry logic
+                            println("******************")
+                            println("ERROR??")
+                            println("******************")
+                        }
+                    } else {
+                        showLoginRequiredDialog = true
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save Event")
             }
+
+
+//            Button(
+//                onClick = {
+//                    if (isUserLoggedIn) {
+//                        authViewModel.currentUser?.let { user ->
+//                            viewModel.saveEvent(user) { success, error ->
+//                                if (success) {
+//                                    showSuccessDialog = true
+//                                } else {
+//                                    errorMessage = error ?: "An unexpected error occurred."
+//                                    showErrorDialog = true
+//                                }
+//                            }
+//                        } ?: run {
+//                            errorMessage = "Unable to retrieve user data."
+//                            showErrorDialog = true
+//                        }
+
+//                        if (currentUserId != null) {
+//                            viewModel.saveEvent(currentUserId!!) { success, error ->
+//                                if (success) {
+//                                    showSuccessDialog = true
+//                                } else {
+//                                    errorMessage = error ?: "An unexpected error occurred."
+//                                    showErrorDialog = true
+//                                }
+//                            }
+//                        } else {
+//                            println("SANJOOOO")
+//                            println(isUserLoggedIn)
+//                            println(currentUserId)
+//                            // Optional: show a loading indicator or disable button
+//                        }
+//                    } else {
+//                        showLoginRequiredDialog = true
+//                    }
+//                },
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                Text("Save Event")
+//            }
+        }
+
+        if (showSuccessDialog) {
+            ShowSuccessDialog(
+                title = "Success",
+                message = "Event has been saved successfully!",
+                onConfirm = {
+                    showSuccessDialog = false
+                    navController.navigate("home") {
+                        popUpTo("addEvent") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        if (showErrorDialog) {
+            ShowErrorDialog(
+                title = "Error",
+                message = errorMessage,
+                onDismiss = { showErrorDialog = false }
+            )
+        }
+
+        if (showLoginRequiredDialog) {
+            ShowErrorDialog(
+                title = "Login Required",
+                message = "You need to be logged in to create an event.",
+                onDismiss = { showLoginRequiredDialog = false }
+            )
         }
     }
 }

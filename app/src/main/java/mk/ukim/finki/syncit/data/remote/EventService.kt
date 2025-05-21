@@ -51,8 +51,7 @@ class EventService(private val firestore: FirebaseFirestore) {
                 maxCapacity = 5000,
                 address = "123 Park Ave, New York, NY",
                 latitude = 40.785091,
-                longitude = -73.968285,
-                eventIds = listOf("event123")
+                longitude = -73.968285
             ),
             entryFee = 25,
             startTime = LocalDateTime.of(2025, 6, 10, 19, 0),

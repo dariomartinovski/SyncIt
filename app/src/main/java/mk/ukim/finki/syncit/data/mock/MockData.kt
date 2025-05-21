@@ -41,8 +41,7 @@ object MockData {
             latitude = 41.7006,
             longitude = 20.7411,
             description = "Popular winter sports destination",
-            maxCapacity = 100,
-            eventIds = listOf("event1", "event2")
+            maxCapacity = 100
         ),
         Venue(
             id = "venue2",
@@ -51,8 +50,7 @@ object MockData {
             latitude = 41.9973,
             longitude = 21.4254,
             description = "Green park in the center of Skopje",
-            maxCapacity = 100,
-            eventIds = listOf("event3")
+            maxCapacity = 100
         ),
         Venue(
             id = "venue3",
@@ -61,8 +59,7 @@ object MockData {
             latitude = 41.1132,
             longitude = 20.8016,
             description = "Historic open-air theater with lake views",
-            maxCapacity = 100,
-            eventIds = listOf("event4", "event5")
+            maxCapacity = 100
         )
     )
 
