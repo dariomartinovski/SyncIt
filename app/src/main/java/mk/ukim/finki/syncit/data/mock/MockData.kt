@@ -5,7 +5,7 @@ import mk.ukim.finki.syncit.data.model.Event
 import mk.ukim.finki.syncit.data.model.Ticket
 import mk.ukim.finki.syncit.data.model.User
 import mk.ukim.finki.syncit.data.model.Venue
-import mk.ukim.finki.syncit.data.model.generateUniqueCode
+import mk.ukim.finki.syncit.utils.QRCodeGenerator
 import java.time.LocalDateTime
 
 object MockData {
@@ -71,7 +71,7 @@ object MockData {
             description = "Annual skiing championship",
             host = users[0],
             venue = venues[1],
-            startTime = LocalDateTime.of(2025, 3, 10, 10, 0),
+            startTime = LocalDateTime.of(2025, 3, 10, 10, 0).toString(),
             category = Category.WINTER,
             entryFee = 500,
             participants = listOf("user1", "user2")
@@ -83,7 +83,7 @@ object MockData {
             description = "Learn snowboarding with experts",
             host = users[1],
             venue = venues[1],
-            startTime = LocalDateTime.of(2025, 3, 15, 12, 0),
+            startTime = LocalDateTime.of(2025, 3, 15, 12, 0).toString(),
             category = Category.WINTER,
             entryFee = 500,
             participants = listOf("user3")
@@ -95,7 +95,7 @@ object MockData {
             description = "Live music performances in the park",
             host = users[2],
             venue = venues[2],
-            startTime = LocalDateTime.of(2025, 6, 20, 18, 0),
+            startTime = LocalDateTime.of(2025, 6, 20, 18, 0).toString(),
             category = Category.FESTIVAL,
             entryFee = 500,
             participants = listOf("user1", "user3")
@@ -107,7 +107,7 @@ object MockData {
             description = "Classical drama performance",
             host = users[0],
             venue = venues[0],
-            startTime = LocalDateTime.of(2025, 8, 5, 20, 0),
+            startTime = LocalDateTime.of(2025, 8, 5, 20, 0).toString(),
             category = Category.NIGHT,
             entryFee = 500,
             participants = listOf("user2")
@@ -119,7 +119,7 @@ object MockData {
             description = "International jazz artists performing",
             host = users[2],
             venue = venues[2],
-            startTime = LocalDateTime.of(2025, 8, 10, 19, 30),
+            startTime = LocalDateTime.of(2025, 8, 10, 19, 30).toString(),
             category = Category.FESTIVAL,
             entryFee = 500,
             participants = listOf("user1", "user2", "user3")
@@ -130,7 +130,7 @@ object MockData {
             description = "Annual skiing championship",
             host = users[1],
             venue = venues[1],
-            startTime = LocalDateTime.of(2025, 3, 10, 10, 0),
+            startTime = LocalDateTime.of(2025, 3, 10, 10, 0).toString(),
             category = Category.WINTER,
             entryFee = 400,
             participants = listOf("user1", "user2")
@@ -142,7 +142,7 @@ object MockData {
             description = "Learn snowboarding with experts",
             host = users[1],
             venue = venues[1],
-            startTime = LocalDateTime.of(2025, 3, 15, 12, 0),
+            startTime = LocalDateTime.of(2025, 3, 15, 12, 0).toString(),
             category = Category.WINTER,
             entryFee = 200,
             participants = listOf("user3")
@@ -154,7 +154,7 @@ object MockData {
             description = "Live music performances in the park",
             host = users[2],
             venue = venues[2],
-            startTime = LocalDateTime.of(2025, 6, 20, 18, 0),
+            startTime = LocalDateTime.of(2025, 6, 20, 18, 0).toString(),
             category = Category.FESTIVAL,
             entryFee = 700,
             participants = listOf("user1", "user3")
@@ -166,7 +166,7 @@ object MockData {
             description = "Classical drama performance",
             host = users[0],
             venue = venues[0],
-            startTime = LocalDateTime.of(2025, 8, 5, 20, 0),
+            startTime = LocalDateTime.of(2025, 8, 5, 20, 0).toString(),
             category = Category.WINTER,
             entryFee = 600,
             participants = listOf("user2")
@@ -178,7 +178,7 @@ object MockData {
             description = "International jazz artists performing",
             host = users[2],
             venue = venues[2],
-            startTime = LocalDateTime.of(2025, 8, 10, 19, 30),
+            startTime = LocalDateTime.of(2025, 8, 10, 19, 30).toString(),
             category = Category.FESTIVAL,
             entryFee = 500,
             participants = listOf("user1", "user2", "user3")
@@ -189,31 +189,31 @@ object MockData {
             id = "ticket1",
             user = users[0],
             event = events[0],
-            uniqueCode = generateUniqueCode()
+            uniqueCode = QRCodeGenerator.generateUniqueCode()
         ),
         Ticket(
             id = "ticket2",
             user = users[1],
             event = events[1],
-            uniqueCode = generateUniqueCode()
+            uniqueCode = QRCodeGenerator.generateUniqueCode()
         ),
         Ticket(
             id = "ticket3",
             user = users[2],
             event = events[2],
-            uniqueCode = generateUniqueCode()
+            uniqueCode = QRCodeGenerator.generateUniqueCode()
         ),
         Ticket(
             id = "ticket4",
             user = users[0],
             event = events[3],
-            uniqueCode = generateUniqueCode()
+            uniqueCode = QRCodeGenerator.generateUniqueCode()
         ),
         Ticket(
             id = "ticket5",
             user = users[1],
             event = events[4],
-            uniqueCode = generateUniqueCode()
+            uniqueCode = QRCodeGenerator.generateUniqueCode()
         )
     )
 }

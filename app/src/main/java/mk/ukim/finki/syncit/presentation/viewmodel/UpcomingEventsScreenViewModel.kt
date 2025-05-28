@@ -21,8 +21,8 @@ class UpcomingEventsViewModel : ViewModel() {
 
     fun getFilteredEvents(): List<Event> {
         return _createdEvents.value.filter {
-            if (_createdTab.value == 0) it.startTime.isAfter(LocalDateTime.now())
-            else it.startTime.isBefore(LocalDateTime.now())
+            if (_createdTab.value == 0) it.startDateTimeParsed.isAfter(LocalDateTime.now())
+            else it.startDateTimeParsed.isBefore(LocalDateTime.now())
         }
     }
 }

@@ -6,8 +6,10 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-class QRCodeGenerator {
+object QRCodeGenerator {
 
     fun generateQrCode(content: String, size: Int = 512): Bitmap? {
         val writer = QRCodeWriter()
@@ -26,5 +28,17 @@ class QRCodeGenerator {
         }
     }
 
+    fun generateUniqueCode(): String {
+        val now = LocalDateTime.now()
+        val datePart = now.format(DateTimeFormatter.ofPattern("dd-MM"))
+        val randomPart = (1..16)
+            .map { ('A'..'Z') + ('0'..'9') }
+            .flatten()
+            .shuffled()
+            .take(8)
+            .joinToString("")
+
+        return "$datePart-$randomPart"
+    }
 }
 

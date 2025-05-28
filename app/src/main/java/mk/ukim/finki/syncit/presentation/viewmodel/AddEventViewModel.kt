@@ -47,8 +47,6 @@ class AddEventViewModel : ViewModel() {
         val venue = selectedVenue
         val category = selectedCategory
         val fee = entryFee.toLongOrNull()
-        //TODO get the currentUser from the currentUserId or something similar....
-//        val currentUser =
 
         if (title.isBlank() || description.isBlank() || venue == null || category == null || fee == null) {
             onResult(false, "All fields must be filled correctly.")
@@ -63,7 +61,7 @@ class AddEventViewModel : ViewModel() {
             host = currentUser,
             venue = venue,
             entryFee = fee,
-            startTime = LocalDateTime.of(selectedDate, selectedTime),
+            startTime = LocalDateTime.of(selectedDate, selectedTime).toString(),
             participants = emptyList()
         )
 

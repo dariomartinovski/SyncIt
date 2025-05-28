@@ -33,9 +33,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private fun loadCurrentUser() {
         viewModelScope.launch {
             val result = authRepository.getCurrentUserProfile()
-            val user = result.getOrNull()
-            println("Fetched current user: $user")
-            _currentUser.value = user
+            _currentUser.value = result.getOrNull()
         }
     }
 

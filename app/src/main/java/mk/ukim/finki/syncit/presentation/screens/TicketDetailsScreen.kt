@@ -34,12 +34,11 @@ fun TicketDetailsScreen(
 ) {
     val ticket = MockData.tickets.find { it.id == ticketId }
 
-    val qrGenerator = remember { QRCodeGenerator() }
     var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     if (ticket?.uniqueCode != null) {
         LaunchedEffect(ticket.uniqueCode) {
-            qrBitmap = qrGenerator.generateQrCode(ticket.uniqueCode)
+            qrBitmap = QRCodeGenerator.generateQrCode(ticket.uniqueCode)
         }
     }
 
@@ -156,7 +155,6 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // QR Code Section
         Text("Scan for Entry", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0D47A1))
         Spacer(modifier = Modifier.height(8.dp))
         qrBitmap?.let { bitmap ->

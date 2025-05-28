@@ -33,8 +33,8 @@ class UpcomingTicketsViewModel : ViewModel() {
 
     private fun getFilteredTickets(tab: Int): List<Ticket> {
         return allTickets.filter {
-            if (tab == 0) it.event.startTime.isAfter(LocalDateTime.now())
-            else it.event.startTime.isBefore(LocalDateTime.now())
+            if (tab == 0) it.event.startDateTimeParsed.isAfter(LocalDateTime.now())
+            else it.event.startDateTimeParsed.isBefore(LocalDateTime.now())
         }
     }
 }

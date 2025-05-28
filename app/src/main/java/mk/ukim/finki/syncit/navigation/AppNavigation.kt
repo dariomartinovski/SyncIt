@@ -7,7 +7,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import mk.ukim.finki.syncit.data.remote.EventService
 import mk.ukim.finki.syncit.data.repository.AuthRepository
+import mk.ukim.finki.syncit.data.repository.EventRepository
 import mk.ukim.finki.syncit.presentation.screens.AddEventScreen
 import mk.ukim.finki.syncit.presentation.screens.AddVenueScreen
 import mk.ukim.finki.syncit.presentation.screens.BuyTicketsScreen
@@ -34,6 +36,8 @@ fun AppNavigation() {
         )
     )
 
+    val eventRepository = EventRepository(EventService(FirebaseFirestore.getInstance()))
+
     NavHost(navController = navController, startDestination = "home") {
         composable("login") { LoginScreen(navController, authViewModel) }
         composable("register") { RegisterScreen(navController) }
@@ -45,6 +49,8 @@ fun AppNavigation() {
         composable("eventDetails/{eventId}") { backStackEntry ->
             EventDetailsScreen(
                 eventId = backStackEntry.arguments?.getString("eventId") ?: "",
+                authViewModel = authViewModel,
+                eventRepository = eventRepository,
                 navController = navController
             )
         }
@@ -62,6 +68,7 @@ fun AppNavigation() {
         composable("buyTickets/{eventId}") { backStackEntry ->
             BuyTicketsScreen(
                 eventId = backStackEntry.arguments?.getString("eventId") ?: "",
+                authViewModel = authViewModel,
                 navController = navController
             )
         }

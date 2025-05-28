@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mk.ukim.finki.syncit.data.model.Event
+import mk.ukim.finki.syncit.utils.toSimpleFormat
 
 @Composable
 fun EventCard(event: Event, onClick: () -> Unit) {
@@ -21,7 +22,7 @@ fun EventCard(event: Event, onClick: () -> Unit) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = event.title, style = MaterialTheme.typography.titleMedium)
-            Text(text = "📅 ${event.startTime}", style = MaterialTheme.typography.bodySmall)
+            Text(text = "📅 ${event.startDateTimeParsed.toSimpleFormat()}", style = MaterialTheme.typography.bodySmall)
             Text(text = "📍 ${event.venue.title}", style = MaterialTheme.typography.bodySmall)
         }
     }

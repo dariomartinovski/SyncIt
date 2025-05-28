@@ -14,6 +14,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.model.Event
+import mk.ukim.finki.syncit.data.repository.EventRepository
+import mk.ukim.finki.syncit.navigation.BottomNavigationBar
+import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.EventDetailsViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.factory.EventDetailsViewModelFactory
 import mk.ukim.finki.syncit.utils.TopBarUtils
@@ -21,11 +24,14 @@ import mk.ukim.finki.syncit.utils.TopBarUtils
 @Composable
 fun EventDetailsScreen(
     eventId: String,
+    authViewModel: AuthViewModel,
+    eventRepository: EventRepository,
     navController: NavController
 ) {
     val viewModel: EventDetailsViewModel = viewModel(
-        factory = EventDetailsViewModelFactory(eventId)
+        factory = EventDetailsViewModelFactory(eventId, eventRepository)
     )
+    val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
     val event by viewModel.event.collectAsState()
 
@@ -34,20 +40,41 @@ fun EventDetailsScreen(
             topBar = {
                 TopAppBar(
                     title = { TopBarUtils.CustomTitle(event!!.title) },
+                    actions = { TopBarUtils.CustomLoginLogoutIconButton(navController, isUserLoggedIn) },
                     navigationIcon = { TopBarUtils.CustomBackAction(navController) },
-                    colors = TopBarUtils.CustomBackground()
+                    colors = TopBarUtils.CustomBackground(),
                 )
+            },
+            bottomBar = {
+                BottomNavigationBar(navController)
             }
         ) { innerPadding ->
             EventDetailsContent(event!!, Modifier.padding(innerPadding), navController)
         }
     } else {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Event not found", style = MaterialTheme.typography.headlineSmall)
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { TopBarUtils.CustomTitle("SyncIt") },
+                    actions = { TopBarUtils.CustomLoginLogoutIconButton(navController, isUserLoggedIn) },
+                    navigationIcon = { TopBarUtils.CustomBackAction(navController) },
+                    colors = TopBarUtils.CustomBackground()
+                )
+            },
+            bottomBar = {
+                BottomNavigationBar(navController)
+            }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Event not found", style = MaterialTheme.typography.headlineSmall)
+            }
         }
+
     }
 }
 
@@ -62,7 +89,7 @@ fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navControll
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)) // Light Blue Background
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(text = event.title, fontSize = 24.sp, fontWeight = FontWeight.Bold)
@@ -89,7 +116,7 @@ fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navControll
             },
             shape = RoundedCornerShape(50),
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D47A1)) // Blue Button
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D47A1))
         ) {
             Text(
                 text = "Buy Tickets",
@@ -98,7 +125,7 @@ fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navControll
             )
         }
 
-        //TODO add the scan tickets button here.
+//        TODO restrict this with permission if its the owner of the event
         Button(
             onClick = {
                 navController.navigate("scanTickets")
