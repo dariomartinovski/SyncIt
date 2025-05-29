@@ -24,6 +24,18 @@ class EventService(private val firestore: FirebaseFirestore) {
         }
     }
 
+    suspend fun getEventsForUser(userId: String): List<Event> {
+        return try {
+            val snapshot = firestore.collection("events")
+                .whereEqualTo("host.id", userId)
+                .get()
+                .await()
+            snapshot.documents.mapNotNull { it.toObject(Event::class.java) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     suspend fun addEvent(event: Event): Result<Unit> {
         return try {
             val newDoc = firestore.collection("events").document()

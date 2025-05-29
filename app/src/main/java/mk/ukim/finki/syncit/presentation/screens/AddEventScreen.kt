@@ -185,8 +185,6 @@ fun AddEventScreen(
             Button(
                 onClick = {
                     if (isUserLoggedIn) {
-                        println("Current User is")
-                        println(currentUser)
                         if (currentUser != null) {
                             viewModel.saveEvent(currentUser!!) { success, error ->
                                 if (success) {
@@ -197,10 +195,7 @@ fun AddEventScreen(
                                 }
                             }
                         } else {
-                            // Optional: show loading or retry logic
-                            println("******************")
-                            println("ERROR??")
-                            println("******************")
+                            // TODO maybe add sometrhing here later
                         }
                     } else {
                         showLoginRequiredDialog = true
@@ -210,48 +205,6 @@ fun AddEventScreen(
             ) {
                 Text("Save Event")
             }
-
-
-//            Button(
-//                onClick = {
-//                    if (isUserLoggedIn) {
-//                        authViewModel.currentUser?.let { user ->
-//                            viewModel.saveEvent(user) { success, error ->
-//                                if (success) {
-//                                    showSuccessDialog = true
-//                                } else {
-//                                    errorMessage = error ?: "An unexpected error occurred."
-//                                    showErrorDialog = true
-//                                }
-//                            }
-//                        } ?: run {
-//                            errorMessage = "Unable to retrieve user data."
-//                            showErrorDialog = true
-//                        }
-
-//                        if (currentUserId != null) {
-//                            viewModel.saveEvent(currentUserId!!) { success, error ->
-//                                if (success) {
-//                                    showSuccessDialog = true
-//                                } else {
-//                                    errorMessage = error ?: "An unexpected error occurred."
-//                                    showErrorDialog = true
-//                                }
-//                            }
-//                        } else {
-//                            println("SANJOOOO")
-//                            println(isUserLoggedIn)
-//                            println(currentUserId)
-//                            // Optional: show a loading indicator or disable button
-//                        }
-//                    } else {
-//                        showLoginRequiredDialog = true
-//                    }
-//                },
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                Text("Save Event")
-//            }
         }
 
         if (showSuccessDialog) {

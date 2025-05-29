@@ -8,11 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.firestore.FirebaseFirestore
+import mk.ukim.finki.syncit.data.remote.EventService
+import mk.ukim.finki.syncit.data.repository.EventRepository
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.components.EventList
 import mk.ukim.finki.syncit.presentation.components.SegmentedToggle
 import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.UpcomingEventsViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.UpcomingEventsViewModelFactory
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
@@ -20,13 +24,26 @@ import mk.ukim.finki.syncit.utils.TopBarUtils
 @Composable
 fun UpcomingEventsScreen(
     navController: NavController,
-    authViewModel: AuthViewModel,
-    viewModel: UpcomingEventsViewModel = viewModel()
+    authViewModel: AuthViewModel
 ) {
     val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
+
+    val firestore = remember { FirebaseFirestore.getInstance() }
+    val eventService = remember { EventService(firestore) }
+    val eventRepository = remember { EventRepository(eventService) }
+    val viewModel: UpcomingEventsViewModel = viewModel(
+        factory = UpcomingEventsViewModelFactory(eventRepository)
+    )
+
+    LaunchedEffect(currentUser) {
+        currentUser?.id?.let { userId ->
+            viewModel.fetchEvents(userId)
+        }
+    }
 
     val createdTab by viewModel.createdTab.collectAsState()
-    val createdFiltered = viewModel.getFilteredEvents()
+    val filteredEvents by viewModel.filteredEvents.collectAsState()
 
     Scaffold(
         topBar = {
@@ -60,7 +77,7 @@ fun UpcomingEventsScreen(
             }
 
             Spacer(Modifier.height(10.dp))
-            EventList(events = createdFiltered, navController = navController)
+            EventList(events = filteredEvents, navController = navController)
         }
     }
 }

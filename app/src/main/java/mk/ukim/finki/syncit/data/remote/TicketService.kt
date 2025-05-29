@@ -33,4 +33,35 @@ class TicketService(private val db: FirebaseFirestore) {
             Result.failure(e)
         }
     }
+
+    suspend fun getTickets(): List<Ticket> {
+        return try {
+            val snapshot = db.collection("tickets").get().await()
+            snapshot.documents.mapNotNull { it.toObject(Ticket::class.java) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getTicketsForUser(userId: String): List<Ticket> {
+        return try {
+            val snapshot = db.collection("tickets")
+                .whereEqualTo("user.id", userId)
+                .get()
+                .await()
+            snapshot.documents.mapNotNull { it.toObject(Ticket::class.java) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getTicketById(ticketId: String): Ticket? {
+        return try {
+            val snapshot = db.collection("tickets").document(ticketId).get().await()
+            snapshot.toObject(Ticket::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
 }

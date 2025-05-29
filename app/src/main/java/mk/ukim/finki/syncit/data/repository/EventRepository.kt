@@ -13,6 +13,10 @@ class EventRepository(private val eventService: EventService) {
         return eventService.getEventById(eventId)
     }
 
+    suspend fun getEventsForUser(userId: String): List<Event> {
+        return eventService.getEventsForUser(userId)
+    }
+
     suspend fun addEvent(event: Event): Result<Unit> {
         return eventService .addEvent(event)
     }

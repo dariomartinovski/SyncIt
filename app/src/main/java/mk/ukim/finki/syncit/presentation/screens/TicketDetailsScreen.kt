@@ -21,24 +21,43 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.firestore.FirebaseFirestore
 import mk.ukim.finki.syncit.data.mock.MockData
 import mk.ukim.finki.syncit.data.model.*
+import mk.ukim.finki.syncit.data.remote.TicketService
+import mk.ukim.finki.syncit.data.repository.TicketRepository
+import mk.ukim.finki.syncit.presentation.viewmodel.TicketDetailsViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.TicketDetailsViewModelFactory
 import mk.ukim.finki.syncit.utils.QRCodeGenerator
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
 @Composable
 fun TicketDetailsScreen(
     ticketId: String,
-    navController: NavController
+    navController: NavController,
+    viewModel: TicketDetailsViewModel = viewModel(
+        factory = TicketDetailsViewModelFactory(
+            TicketRepository(
+                TicketService(FirebaseFirestore.getInstance())
+            )
+        )
+    ),
 ) {
-    val ticket = MockData.tickets.find { it.id == ticketId }
+    val ticket by viewModel.ticket.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    if (ticket?.uniqueCode != null) {
-        LaunchedEffect(ticket.uniqueCode) {
-            qrBitmap = QRCodeGenerator.generateQrCode(ticket.uniqueCode)
+    LaunchedEffect(ticketId) {
+        viewModel.loadTicket(ticketId)
+    }
+
+    LaunchedEffect(ticket?.uniqueCode) {
+        ticket?.uniqueCode?.let {
+            qrBitmap = QRCodeGenerator.generateQrCode(it)
         }
     }
 
@@ -49,27 +68,40 @@ fun TicketDetailsScreen(
                 navigationIcon = { TopBarUtils.CustomBackAction(navController) },
                 colors = TopBarUtils.CustomBackground(),
             )
-        },
-        content = { innerPadding ->
-            ticket?.let {
-                TicketDetailsContent(
-                    ticket = it,
-                    qrBitmap = qrBitmap,
-                    modifier = Modifier.padding(innerPadding)
-                )
-            } ?: run {
-                Column(
+        }
+    ) { innerPadding ->
+        when {
+            isLoading -> {
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text("Ticket not found", fontSize = 20.sp, color = Color.Red)
+                    CircularProgressIndicator()
                 }
             }
+
+            error != null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(error ?: "Unknown error", color = Color.Red, fontSize = 20.sp)
+                }
+            }
+
+            ticket != null -> {
+                TicketDetailsContent(
+                    ticket = ticket!!,
+                    qrBitmap = qrBitmap,
+                    modifier = Modifier.padding(innerPadding)
+                )
+            }
         }
-    )
+    }
 }
 
 @Composable
@@ -79,10 +111,9 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp), // Use the modifier passed from Scaffold
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Ticket Details Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -96,7 +127,7 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
                     text = event.title,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0D47A1) // Dark Blue
+                    color = Color(0xFF0D47A1)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -115,7 +146,7 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = "Start Time", tint = Color(0xFF0D47A1)) // Calendar icon
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Start Time", tint = Color(0xFF0D47A1))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Start Time: ${event.startTime}",
@@ -124,7 +155,7 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, contentDescription = "Participants", tint = Color(0xFF0D47A1)) // People icon
+                    Icon(Icons.Default.Person, contentDescription = "Participants", tint = Color(0xFF0D47A1))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Participants: ${event.participants.size}",
@@ -134,7 +165,7 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Category", tint = Color(0xFF0D47A1)) // Category icon
+                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Category", tint = Color(0xFF0D47A1))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Category: ${event.category.label}",
@@ -163,7 +194,7 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
                     .size(200.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color.White)
-                    .padding(8.dp), // Adds a white border around the QR
+                    .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
