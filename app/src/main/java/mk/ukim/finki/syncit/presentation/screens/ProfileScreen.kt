@@ -7,10 +7,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import mk.ukim.finki.syncit.data.model.User
+import com.google.firebase.firestore.FirebaseFirestore
+import mk.ukim.finki.syncit.data.remote.UserService
+import mk.ukim.finki.syncit.data.repository.UserRepository
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
+import mk.ukim.finki.syncit.presentation.components.ShowErrorDialog
+import mk.ukim.finki.syncit.presentation.components.ShowSuccessDialog
 import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.ProfileViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.ProfileViewModelFactory
 import mk.ukim.finki.syncit.utils.TextUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
 
@@ -21,17 +28,23 @@ fun ProfileScreen(
     authViewModel: AuthViewModel
 ) {
     val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
-    var user by remember {
-        mutableStateOf(
-            User(
-                id = "1",
-                firstName = "John",
-                lastName = "Doe",
-                phoneNumber = "123-456-7890",
-                email = "johndoe@example.com"
-            )
-        )
+    val currentUser by authViewModel.currentUser.collectAsState()
+
+    val db = remember { FirebaseFirestore.getInstance() }
+    val viewModel: ProfileViewModel = viewModel(
+        factory = ProfileViewModelFactory(UserRepository(UserService(db)))
+    )
+
+    val userState by viewModel.user.collectAsState()
+
+    LaunchedEffect(currentUser?.id) {
+        currentUser?.id?.let { viewModel.loadUser(it) }
     }
+
+    // New dialog states
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -51,61 +64,77 @@ fun ProfileScreen(
         ) {
             TextUtils.LargeTitle("Edit Profile")
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // First Name
             OutlinedTextField(
-                value = user.firstName,
-                onValueChange = { user = user.copy(firstName = it) },
+                value = userState.firstName,
+                onValueChange = { viewModel.updateUser(userState.copy(firstName = it)) {} },
                 label = { Text("First Name") },
-                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
-            // Last Name
             OutlinedTextField(
-                value = user.lastName,
-                onValueChange = { user = user.copy(lastName = it) },
+                value = userState.lastName,
+                onValueChange = { viewModel.updateUser(userState.copy(lastName = it)) {} },
                 label = { Text("Last Name") },
-                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
-            // Phone
             OutlinedTextField(
-                value = user.phoneNumber,
-                onValueChange = { user = user.copy(phoneNumber = it) },
+                value = userState.phoneNumber,
+                onValueChange = { viewModel.updateUser(userState.copy(phoneNumber = it)) {} },
                 label = { Text("Phone Number") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
-            // Email (Read-only)
             OutlinedTextField(
-                value = user.email,
+                value = userState.email,
                 onValueChange = {},
-                label = { Text("Email") },
                 readOnly = true,
-                singleLine = true,
+                label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Save Button
             Button(
-                onClick = { println("Saved: $user") },
+                onClick = {
+                    viewModel.updateUser(userState) { success ->
+                        if (success) {
+                            showSuccessDialog = true
+                        } else {
+                            errorMessage = "Failed to save changes."
+                            showErrorDialog = true
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save Changes")
             }
+        }
+
+        if (showSuccessDialog) {
+            ShowSuccessDialog(
+                title = "Success",
+                message = "Changes saved successfully!",
+                onConfirm = { showSuccessDialog = false }
+            )
+        }
+
+        if (showErrorDialog) {
+            ShowErrorDialog(
+                title = "Error",
+                message = errorMessage,
+                onDismiss = { showErrorDialog = false }
+            )
         }
     }
 }
