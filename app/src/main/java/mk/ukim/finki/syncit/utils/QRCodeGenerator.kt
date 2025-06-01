@@ -8,6 +8,8 @@ import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 
 object QRCodeGenerator {
 
@@ -35,10 +37,22 @@ object QRCodeGenerator {
             .map { ('A'..'Z') + ('0'..'9') }
             .flatten()
             .shuffled()
-            .take(8)
+            .take(24)
             .joinToString("")
 
         return "$datePart-$randomPart"
+    }
+
+    fun bitmapToBase64(bitmap: Bitmap): String {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        val byteArray = outputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.NO_WRAP)
+    }
+
+    fun generateQRCodeBase64(content: String, size: Int = 512): String? {
+        val bitmap = generateQrCode(content, size) ?: return null
+        return bitmapToBase64(bitmap)
     }
 }
 

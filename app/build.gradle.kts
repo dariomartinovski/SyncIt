@@ -1,9 +1,16 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
 }
+
+val SMTP_EMAIL = gradleLocalProperties(rootDir, providers)
+    .getProperty("SMTP_EMAIL", "")
+val SMTP_PASSWORD = gradleLocalProperties(rootDir, providers)
+    .getProperty("SMTP_PASSWORD", "")
 
 android {
     namespace = "mk.ukim.finki.syncit"
@@ -17,6 +24,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue(
+            "string",
+            "SMTP_EMAIL",
+            "\"" + SMTP_EMAIL + "\""
+        )
+
+        resValue(
+            "string",
+            "SMTP_PASSWORD",
+            "\"" + SMTP_PASSWORD + "\""
+        )
     }
 
     buildTypes {
@@ -37,6 +56,16 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/NOTICE.md",
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE",
+                "META-INF/NOTICE"
+            )
+        }
     }
 }
 
@@ -65,6 +94,8 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.3.0")
     implementation("androidx.camera:camera-lifecycle:1.3.0")
     implementation("androidx.camera:camera-view:1.3.0")
+    implementation("com.sun.mail:android-mail:1.6.7")
+    implementation("com.sun.mail:android-activation:1.6.7")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

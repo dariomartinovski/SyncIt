@@ -1,10 +1,14 @@
 package mk.ukim.finki.syncit.data.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import mk.ukim.finki.syncit.data.model.Event
 import mk.ukim.finki.syncit.data.model.Ticket
 import mk.ukim.finki.syncit.data.model.User
+import mk.ukim.finki.syncit.utils.EmailContentHelper
+import mk.ukim.finki.syncit.utils.EmailSender
 import mk.ukim.finki.syncit.utils.QRCodeGenerator
 
 class TicketService(private val db: FirebaseFirestore) {
@@ -16,6 +20,7 @@ class TicketService(private val db: FirebaseFirestore) {
     ): Result<Unit> {
         return try {
             val ticketsCollection = db.collection("tickets")
+            val reservedTickets = mutableListOf<Ticket>()
 
             repeat(quantity) {
                 val ticketId = ticketsCollection.document().id
@@ -25,7 +30,18 @@ class TicketService(private val db: FirebaseFirestore) {
                     event = event,
                     uniqueCode = QRCodeGenerator.generateUniqueCode()
                 )
+
                 ticketsCollection.document(ticketId).set(ticket).await()
+                reservedTickets.add(ticket)
+            }
+
+            withContext(Dispatchers.IO) {
+                val emailBody = EmailContentHelper.getBulkTicketConfirmationBody(reservedTickets, event)
+                EmailSender.sendEmail(
+                    toEmail = user.email,
+                    subject = "Your Tickets for ${event.title}",
+                    body = emailBody
+                )
             }
 
             Result.success(Unit)
