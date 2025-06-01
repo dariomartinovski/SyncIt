@@ -21,26 +21,37 @@ class TicketService(private val db: FirebaseFirestore) {
         return try {
             val ticketsCollection = db.collection("tickets")
             val reservedTickets = mutableListOf<Ticket>()
+            val qrImages = mutableListOf<Pair<String, ByteArray>>()
 
-            repeat(quantity) {
+            repeat(quantity) { index ->
                 val ticketId = ticketsCollection.document().id
+                val uniqueCode = QRCodeGenerator.generateUniqueCode()
                 val ticket = Ticket(
                     id = ticketId,
                     user = user,
                     event = event,
-                    uniqueCode = QRCodeGenerator.generateUniqueCode()
+                    uniqueCode = uniqueCode
                 )
 
                 ticketsCollection.document(ticketId).set(ticket).await()
                 reservedTickets.add(ticket)
+
+                val bitmap = QRCodeGenerator.generateQrCode(uniqueCode)
+                val byteArray = QRCodeGenerator.bitmapToPngBytes(bitmap!!)
+                val cid = "qr${index + 1}"
+                qrImages.add(cid to byteArray)
             }
 
             withContext(Dispatchers.IO) {
-                val emailBody = EmailContentHelper.getBulkTicketConfirmationBody(reservedTickets, event)
-                EmailSender.sendEmail(
+                val emailBody = EmailContentHelper.getBulkTicketConfirmationBodyWithCids(
+                    reservedTickets,
+                    event
+                )
+                EmailSender.sendEmailWithQrAttachment(
                     toEmail = user.email,
                     subject = "Your Tickets for ${event.title}",
-                    body = emailBody
+                    htmlBody = emailBody,
+                    qrImages = qrImages
                 )
             }
 
@@ -49,6 +60,7 @@ class TicketService(private val db: FirebaseFirestore) {
             Result.failure(e)
         }
     }
+
 
     suspend fun getTickets(): List<Ticket> {
         return try {

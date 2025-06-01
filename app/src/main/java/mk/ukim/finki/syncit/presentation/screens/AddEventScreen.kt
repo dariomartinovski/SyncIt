@@ -195,7 +195,7 @@ fun AddEventScreen(
                                 }
                             }
                         } else {
-                            // TODO maybe add sometrhing here later
+                            // TODO maybe add something here later
                         }
                     } else {
                         showLoginRequiredDialog = true

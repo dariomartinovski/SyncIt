@@ -54,5 +54,11 @@ object QRCodeGenerator {
         val bitmap = generateQrCode(content, size) ?: return null
         return bitmapToBase64(bitmap)
     }
+
+    fun bitmapToPngBytes(bitmap: Bitmap): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        return outputStream.toByteArray()
+    }
 }
 
