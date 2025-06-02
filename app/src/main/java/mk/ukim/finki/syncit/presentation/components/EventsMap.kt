@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
@@ -20,6 +21,7 @@ import org.osmdroid.views.overlay.Marker
 
 @Composable
 fun EventsMap(events: List<Event>, navController: NavController) {
+    val context = rememberUpdatedState(LocalContext.current)
     var mapView by remember { mutableStateOf<MapView?>(null) }
 
     AndroidView(
@@ -27,10 +29,10 @@ fun EventsMap(events: List<Event>, navController: NavController) {
             .fillMaxWidth()
             .height(500.dp)
             .clipToBounds(),
-        factory = { context ->
-            MapView(context).apply {
-                val prefs = context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE)
-                Configuration.getInstance().load(context, prefs)
+        factory = { ctx ->
+            MapView(ctx).apply {
+                val prefs = ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE)
+                Configuration.getInstance().load(ctx, prefs)
                 setTileSource(TileSourceFactory.MAPNIK)
                 setMultiTouchControls(true)
 
@@ -39,29 +41,31 @@ fun EventsMap(events: List<Event>, navController: NavController) {
                 controller.setZoom(9.0)
 
                 mapView = this
+            }
+        },
+        update = { map ->
+            map.overlays.removeAll { it is Marker }
 
-                // Add markers for each event
-                events.forEach { event ->
-                    event.venue?.let { venue ->
-                        venue.latitude?.let { lat ->
-                            venue.longitude?.let { lon ->
-                                val marker = Marker(this).apply {
-                                    position = GeoPoint(lat, lon)
-                                    title = event.title
-                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                    icon = mapView!!.context.getDrawable(R.drawable.location_on_24px)
+            events.forEach { event ->
+                event.venue?.let { venue ->
+                    val lat = venue.latitude
+                    val lon = venue.longitude
 
-                                    // Set custom info window
-                                    infoWindow = CustomInfoWindow(mapView!!, event, venue, navController)
-                                }
-
-                                overlays.add(marker)
-                            }
+                    if (lat != null && lon != null) {
+                        val marker = Marker(map).apply {
+                            position = GeoPoint(lat, lon)
+                            title = event.title
+                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                            icon = context.value.getDrawable(R.drawable.location_on_24px)
+                            infoWindow = CustomInfoWindow(map, event, venue, navController)
                         }
+
+                        map.overlays.add(marker)
                     }
                 }
-                invalidate()
             }
+
+            map.invalidate()
         }
     )
 }

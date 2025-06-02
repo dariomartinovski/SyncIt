@@ -14,9 +14,13 @@ import androidx.navigation.NavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
+import mk.ukim.finki.syncit.presentation.components.CustomSearchBar
 import mk.ukim.finki.syncit.presentation.components.EventList
 import mk.ukim.finki.syncit.presentation.components.EventsMap
 import mk.ukim.finki.syncit.presentation.components.ExpandableFAB
@@ -36,35 +40,43 @@ fun HomeScreen(
 
     val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
     var isListView by remember { mutableStateOf(true) }
+
     val events = viewModel.events
+    val searchQuery by viewModel.searchQuery
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { TopBarUtils.CustomTitle("SyncIt") },
                 actions = {
-                    TopBarUtils.CustomSuffixIconButton("Toggle View",
+                    TopBarUtils.CustomSuffixIconButton(
+                        "Toggle View",
                         if (isListView) Icons.Default.Map else Icons.AutoMirrored.Outlined.ViewList,
-                        { isListView = !isListView })
+                        { isListView = !isListView }
+                    )
                     TopBarUtils.CustomLoginLogoutIconButton(navController, isUserLoggedIn)
                 },
                 colors = TopBarUtils.CustomBackground(),
             )
         },
-        floatingActionButton = {
-            ExpandableFAB(navController)
-        },
-        bottomBar = {
-            BottomNavigationBar(navController)
-        }
+        floatingActionButton = { if (isUserLoggedIn) ExpandableFAB(navController) },
+        bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-        ) {
+        Box(modifier = Modifier.padding(innerPadding).padding(16.dp)) {
             Column {
-                TextUtils.LargeTitle("Events")
+                TextUtils.LargeTitle(
+                    text = "Explore. Plan. Attend.",
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 28.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                CustomSearchBar(
+                    searchQuery = viewModel.searchQuery.value,
+                    onSearchQueryChange = viewModel::onSearchQueryChange
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 

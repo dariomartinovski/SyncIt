@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import mk.ukim.finki.syncit.R
 import mk.ukim.finki.syncit.data.model.Event
 import mk.ukim.finki.syncit.data.model.Venue
+import mk.ukim.finki.syncit.utils.toSimpleFormat
 
 class CustomInfoWindow(
     mapView: MapView,
@@ -26,7 +27,7 @@ class CustomInfoWindow(
         val venueTitleView: TextView = view.findViewById(R.id.venueTitle)
 
         titleView.text = event.title
-        startTimeView.text = "Start Time: ${event.startTime}"
+        startTimeView.text = "Start Time: ${event.startDateTimeParsed.toSimpleFormat()}"
         venueTitleView.text = "Venue: ${venue.title}"
 
         val buyTicketsButton: Button = view.findViewById(R.id.buyTicketsButton)

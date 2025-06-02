@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import mk.ukim.finki.syncit.data.model.Event
+import mk.ukim.finki.syncit.data.model.User
 import mk.ukim.finki.syncit.data.repository.EventRepository
 import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
@@ -32,6 +33,7 @@ fun EventDetailsScreen(
         factory = EventDetailsViewModelFactory(eventId, eventRepository)
     )
     val isUserLoggedIn by authViewModel.isLoggedIn.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
 
     val event by viewModel.event.collectAsState()
 
@@ -49,7 +51,7 @@ fun EventDetailsScreen(
                 BottomNavigationBar(navController)
             }
         ) { innerPadding ->
-            EventDetailsContent(event!!, Modifier.padding(innerPadding), navController)
+            EventDetailsContent(event!!, Modifier.padding(innerPadding), navController, currentUser)
         }
     } else {
         Scaffold(
@@ -79,7 +81,7 @@ fun EventDetailsScreen(
 }
 
 @Composable
-fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navController: NavController) {
+fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navController: NavController, currentUser: User?) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -108,9 +110,8 @@ fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navControll
             }
         }
 
-        // Buy Tickets Button
         Spacer(modifier = Modifier.height(24.dp))
-        Button(
+        if(currentUser != null) Button(
             onClick = {
                 navController.navigate("buyTickets/${event.id}")
             },
@@ -125,8 +126,7 @@ fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navControll
             )
         }
 
-//        TODO restrict this with permission if its the owner of the event
-        Button(
+        if(currentUser != null && currentUser.id == event.host.id) Button(
             onClick = {
                 navController.navigate("scanTickets")
             }

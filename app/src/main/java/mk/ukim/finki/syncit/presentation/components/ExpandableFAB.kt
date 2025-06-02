@@ -20,14 +20,14 @@ fun ExpandableFAB(navController: NavController) {
                 FloatingActionButton(
                     onClick = { navController.navigate("addVenue") }
                 ) {
-                    Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Add Venue")
+                    Icon(imageVector = Icons.Default.MapsHomeWork, contentDescription = "Add Venue")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
 
                 FloatingActionButton(
                     onClick = { navController.navigate("addEvent") }
                 ) {
-                    Icon(imageVector = Icons.Default.AddCircle, contentDescription = "Add Event")
+                    Icon(imageVector = Icons.Default.Event, contentDescription = "Add Event")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
             }
