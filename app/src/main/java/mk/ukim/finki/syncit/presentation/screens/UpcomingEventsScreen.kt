@@ -55,29 +55,35 @@ fun UpcomingEventsScreen(
         },
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .fillMaxSize()
-        ) {
-            TextUtils.LargeTitle("My Created Events")
-
-            Spacer(Modifier.height(10.dp))
-
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+        if (isUserLoggedIn)
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(16.dp)
+                    .fillMaxSize()
             ) {
-                SegmentedToggle(
-                    options = listOf("Upcoming", "History"),
-                    selectedIndex = createdTab,
-                    onOptionSelected = { viewModel.setCreatedTab(it) }
-                )
-            }
+                TextUtils.LargeTitle("My Created Events")
 
-            Spacer(Modifier.height(10.dp))
-            EventList(events = filteredEvents, navController = navController)
-        }
+                Spacer(Modifier.height(10.dp))
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    SegmentedToggle(
+                        options = listOf("Upcoming", "History"),
+                        selectedIndex = createdTab,
+                        onOptionSelected = { viewModel.setCreatedTab(it) }
+                    )
+                }
+
+                Spacer(Modifier.height(10.dp))
+                EventList(events = filteredEvents, navController = navController)
+            }
+        else
+            TextUtils.CenteredMessage(
+                message = "Please log in to view your events.",
+                modifier = Modifier.padding(innerPadding)
+            )
     }
 }

@@ -59,45 +59,51 @@ fun UpcomingTicketsScreen(
         },
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .fillMaxSize()
-        ) {
-            TextUtils.LargeTitle("My Tickets")
-            Spacer(Modifier.height(10.dp))
-
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+        if (isUserLoggedIn)
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(16.dp)
+                    .fillMaxSize()
             ) {
-                SegmentedToggle(
-                    options = listOf("Upcoming", "History"),
-                    selectedIndex = selectedTab,
-                    onOptionSelected = { viewModel.onTabSelected(it) }
-                )
-            }
+                TextUtils.LargeTitle("My Tickets")
+                Spacer(Modifier.height(10.dp))
 
-            Spacer(Modifier.height(10.dp))
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    SegmentedToggle(
+                        options = listOf("Upcoming", "History"),
+                        selectedIndex = selectedTab,
+                        onOptionSelected = { viewModel.onTabSelected(it) }
+                    )
+                }
 
-            when {
-                isLoading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                Spacer(Modifier.height(10.dp))
+
+                when {
+                    isLoading -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    error != null -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("Error: $error", color = MaterialTheme.colorScheme.error)
+                        }
+                    }
+
+                    else -> {
+                        TicketList(tickets = tickets, navController = navController)
                     }
                 }
-
-                error != null -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Error: $error", color = MaterialTheme.colorScheme.error)
-                    }
-                }
-
-                else -> {
-                    TicketList(tickets = tickets, navController = navController)
-                }
             }
-        }
+        else
+            TextUtils.CenteredMessage(
+                message = "Please log in to view your events.",
+                modifier = Modifier.padding(innerPadding)
+            )
     }
 }

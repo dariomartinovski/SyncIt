@@ -56,85 +56,91 @@ fun ProfileScreen(
         },
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .fillMaxSize()
-        ) {
-            TextUtils.LargeTitle("Edit Profile")
-
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = userState.firstName,
-                onValueChange = { viewModel.updateUser(userState.copy(firstName = it)) {} },
-                label = { Text("First Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = userState.lastName,
-                onValueChange = { viewModel.updateUser(userState.copy(lastName = it)) {} },
-                label = { Text("Last Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = userState.phoneNumber,
-                onValueChange = { viewModel.updateUser(userState.copy(phoneNumber = it)) {} },
-                label = { Text("Phone Number") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = userState.email,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    viewModel.updateUser(userState) { success ->
-                        if (success) {
-                            showSuccessDialog = true
-                        } else {
-                            errorMessage = "Failed to save changes."
-                            showErrorDialog = true
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
+        if (isUserLoggedIn)
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(16.dp)
+                    .fillMaxSize()
             ) {
-                Text("Save Changes")
+                TextUtils.LargeTitle("Edit Profile")
+
+                Spacer(Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = userState.firstName,
+                    onValueChange = { viewModel.updateUser(userState.copy(firstName = it)) {} },
+                    label = { Text("First Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = userState.lastName,
+                    onValueChange = { viewModel.updateUser(userState.copy(lastName = it)) {} },
+                    label = { Text("Last Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = userState.phoneNumber,
+                    onValueChange = { viewModel.updateUser(userState.copy(phoneNumber = it)) {} },
+                    label = { Text("Phone Number") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = userState.email,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.updateUser(userState) { success ->
+                            if (success) {
+                                showSuccessDialog = true
+                            } else {
+                                errorMessage = "Failed to save changes."
+                                showErrorDialog = true
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Save Changes")
+                }
             }
-        }
-
-        if (showSuccessDialog) {
-            ShowSuccessDialog(
-                title = "Success",
-                message = "Changes saved successfully!",
-                onConfirm = { showSuccessDialog = false }
+        else
+            TextUtils.CenteredMessage(
+                message = "Please log in to view your events.",
+                modifier = Modifier.padding(innerPadding)
             )
-        }
 
-        if (showErrorDialog) {
-            ShowErrorDialog(
-                title = "Error",
-                message = errorMessage,
-                onDismiss = { showErrorDialog = false }
-            )
-        }
+            if (showSuccessDialog) {
+                ShowSuccessDialog(
+                    title = "Success",
+                    message = "Changes saved successfully!",
+                    onConfirm = { showSuccessDialog = false }
+                )
+            }
+
+            if (showErrorDialog) {
+                ShowErrorDialog(
+                    title = "Error",
+                    message = errorMessage,
+                    onDismiss = { showErrorDialog = false }
+                )
+            }
     }
 }
