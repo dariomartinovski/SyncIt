@@ -20,6 +20,20 @@ class TicketService(private val db: FirebaseFirestore) {
     ): Result<Unit> {
         return try {
             val ticketsCollection = db.collection("tickets")
+            val eventCollection = db.collection("events")
+            val eventDocRef = eventCollection.document(event.id)
+
+            val snapshot = eventDocRef.get().await()
+
+            val currentParticipants = snapshot.get("participants") as? List<String> ?: emptyList()
+
+            val venueMap = snapshot.get("venue") as? Map<*, *>
+            val maxCapacity = (venueMap?.get("maxCapacity") as? Long)?.toInt() ?: Int.MAX_VALUE
+
+            if (currentParticipants.size + quantity > maxCapacity) {
+                return Result.failure(IllegalStateException("Not enough space left for $quantity tickets"))
+            }
+
             val reservedTickets = mutableListOf<Ticket>()
             val qrImages = mutableListOf<Pair<String, ByteArray>>()
 
@@ -42,6 +56,14 @@ class TicketService(private val db: FirebaseFirestore) {
                 qrImages.add(cid to byteArray)
             }
 
+            db.runTransaction { transaction ->
+                val freshSnapshot = transaction.get(eventDocRef)
+                val current = freshSnapshot.get("participants") as? List<String> ?: emptyList()
+                val updated = current + reservedTickets.map { it.id }
+
+                transaction.update(eventDocRef, "participants", updated)
+            }.await()
+
             withContext(Dispatchers.IO) {
                 val emailBody = EmailContentHelper.getBulkTicketConfirmationBodyWithCids(
                     reservedTickets,
@@ -60,7 +82,6 @@ class TicketService(private val db: FirebaseFirestore) {
             Result.failure(e)
         }
     }
-
 
     suspend fun getTickets(): List<Ticket> {
         return try {

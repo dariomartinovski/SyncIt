@@ -2,17 +2,25 @@
 package mk.ukim.finki.syncit.presentation.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import mk.ukim.finki.syncit.data.model.Event
 import mk.ukim.finki.syncit.data.model.User
 import mk.ukim.finki.syncit.data.repository.EventRepository
@@ -20,7 +28,9 @@ import mk.ukim.finki.syncit.navigation.BottomNavigationBar
 import mk.ukim.finki.syncit.presentation.viewmodel.AuthViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.EventDetailsViewModel
 import mk.ukim.finki.syncit.presentation.viewmodel.factory.EventDetailsViewModelFactory
+import mk.ukim.finki.syncit.utils.CategoryUtils
 import mk.ukim.finki.syncit.utils.TopBarUtils
+import mk.ukim.finki.syncit.utils.toFormattedDate
 
 @Composable
 fun EventDetailsScreen(
@@ -81,61 +91,109 @@ fun EventDetailsScreen(
 }
 
 @Composable
-fun EventDetailsContent(event: Event, modifier: Modifier = Modifier, navController: NavController, currentUser: User?) {
+fun EventDetailsContent(
+    event: Event,
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    currentUser: User?
+) {
+    val imageUrl = CategoryUtils.getCategoryImage(event.category)
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .verticalScroll(rememberScrollState())
     ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = event.title, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = event.description, fontSize = 16.sp, color = Color.DarkGray)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "📍 Venue: ${event.venue.title}", fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "📅 Start Time: ${event.startTime}", fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "👥 Participants: ${event.participants.size} attending",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        }
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = "${event.category} banner",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp),
+            contentScale = ContentScale.Crop
+        )
 
-        Spacer(modifier = Modifier.height(24.dp))
-        if(currentUser != null) Button(
-            onClick = {
-                navController.navigate("buyTickets/${event.id}")
-            },
-            shape = RoundedCornerShape(50),
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D47A1))
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Buy Tickets",
-                fontSize = 18.sp,
-                color = Color.White
+                text = event.title,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
             )
-        }
 
-        if(currentUser != null && currentUser.id == event.host.id) Button(
-            onClick = {
-                navController.navigate("scanTickets")
-            }
-        ) {
+            Spacer(modifier = Modifier.height(4.dp))
+
             Text(
-                text = "Scan tickets",
-                fontSize = 18.sp,
-                color = Color.White
+                text = "📍 ${event.venue.title}, ${event.venue.address}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.CalendarToday, contentDescription = "Date", tint = Color.Gray)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = event.startDateTimeParsed.toFormattedDate(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Person, contentDescription = "Host", tint = Color.Gray)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = event.host.fullName,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.AttachMoney, contentDescription = "Entry Fee", tint = Color.Gray)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = if (event.entryFee == 0L) "Free" else "${event.entryFee} MKD",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = event.description,
+                style = MaterialTheme.typography.bodyLarge,
+                lineHeight = 22.sp
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (currentUser != null) {
+                Button(
+                    onClick = { navController.navigate("buyTickets/${event.id}") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D47A1))
+                ) {
+                    Text("Buy Tickets", color = Color.White, fontSize = 16.sp)
+                }
+
+                if (currentUser.id == event.host.id) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = { navController.navigate("scanTickets") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5E20))
+                    ) {
+                        Text("Scan Tickets", color = Color.White, fontSize = 16.sp)
+                    }
+                }
+            }
         }
     }
 }

@@ -6,4 +6,7 @@ data class User(
     val lastName: String = "",
     val phoneNumber: String = "",
     val email: String = ""
-)
+) {
+    val fullName: String
+        get() = "$firstName $lastName"
+}

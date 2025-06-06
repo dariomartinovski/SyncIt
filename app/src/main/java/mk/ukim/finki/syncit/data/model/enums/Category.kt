@@ -9,7 +9,12 @@ enum class Category(val label: String) {
     SUMMER("Summer"),
     WINTER("Winter"),
     OTHERS("Others"),
-    NIGHT("Night");
+    NIGHT("Night"),
+    CONCERT("Concert"),
+    CONFERENCE("Conference"),
+    SPORTS("Sports"),
+    THEATRE("Theatre"),
+    EDUCATION("Education");
 
     override fun toString(): String {
         return label

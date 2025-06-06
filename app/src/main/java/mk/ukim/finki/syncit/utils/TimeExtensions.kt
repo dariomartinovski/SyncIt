@@ -21,6 +21,8 @@ fun LocalDate.toFormattedDate(): String =
 fun LocalTime.toFormattedTime(): String =
     this.format(DateTimeFormatter.ofPattern("HH:mm"))
 
+fun LocalDateTime.toFormattedDate(): String =
+    this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
 
 @SuppressLint("DefaultLocale")
 fun Pair<Int, Int>.toFormattedTime(): String {
