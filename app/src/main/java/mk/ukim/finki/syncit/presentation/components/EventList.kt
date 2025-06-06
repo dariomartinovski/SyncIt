@@ -26,7 +26,7 @@ fun EventList(events: List<Event>, navController: NavController) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(events) { event ->
                 EventCard(event, onClick = { navController.navigate("eventDetails/${event.id}") })
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }

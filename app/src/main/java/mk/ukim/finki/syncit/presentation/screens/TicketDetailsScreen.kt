@@ -107,6 +107,8 @@ fun TicketDetailsScreen(
 @Composable
 fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier = Modifier) {
     val event = ticket.event
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val onPrimary = MaterialTheme.colorScheme.onPrimaryContainer
 
     Column(
         modifier = modifier
@@ -120,65 +122,72 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
                 .padding(8.dp),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)) // Light Blue Background
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = event.title,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0D47A1)
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = primaryColor
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = event.description,
-                    fontSize = 16.sp,
-                    color = Color.DarkGray
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = onPrimary
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.LocationOn, contentDescription = "Venue", tint = Color(0xFF0D47A1))
+                    Icon(Icons.Default.LocationOn, contentDescription = "Venue", tint = primaryColor)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Venue: ${event.venue.title}",
-                        fontSize = 16.sp
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = "Start Time", tint = Color(0xFF0D47A1))
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Start Time", tint = primaryColor)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Start Time: ${event.startTime}",
-                        fontSize = 16.sp
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, contentDescription = "Participants", tint = Color(0xFF0D47A1))
+                    Icon(Icons.Default.Person, contentDescription = "Participants", tint = primaryColor)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Participants: ${event.participants.size}",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Category", tint = Color(0xFF0D47A1))
+                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Category", tint = primaryColor)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Category: ${event.category.label}",
-                        fontSize = 16.sp
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, contentDescription = "User", tint = Color(0xFF0D47A1))
+                    Icon(Icons.Default.Person, contentDescription = "Client", tint = primaryColor)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "User: ${ticket.user.firstName} ${ticket.user.lastName}",
-                        fontSize = 16.sp
+                        text = "Client: ${ticket.user.firstName} ${ticket.user.lastName}",
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
@@ -186,8 +195,14 @@ fun TicketDetailsContent(ticket: Ticket, qrBitmap: Bitmap?, modifier: Modifier =
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Scan for Entry", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0D47A1))
+        Text(
+            text = "Scan for Entry",
+            style = MaterialTheme.typography.titleMedium,
+            color = primaryColor
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         qrBitmap?.let { bitmap ->
             Box(
                 modifier = Modifier
