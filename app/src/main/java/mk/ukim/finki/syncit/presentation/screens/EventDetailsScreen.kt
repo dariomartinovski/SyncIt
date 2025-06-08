@@ -170,6 +170,20 @@ fun EventDetailsContent(
                 lineHeight = 22.sp
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                ) {
+                Icon(Icons.Default.Person, contentDescription = "Participants", tint = Color.Gray)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${event.participants.size} / ${event.venue.maxCapacity}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             if (currentUser != null) {

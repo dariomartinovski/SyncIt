@@ -11,17 +11,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import mk.ukim.finki.syncit.data.repository.TicketRepository
 import mk.ukim.finki.syncit.presentation.components.ShowErrorDialog
 import mk.ukim.finki.syncit.presentation.components.ShowSuccessDialog
 import mk.ukim.finki.syncit.presentation.viewmodel.ScanTicketViewModel
+import mk.ukim.finki.syncit.presentation.viewmodel.factory.ScanTicketsViewModelFactory
 
 @Composable
-fun ScanTicketScreen(navController: NavController, viewModel: ScanTicketViewModel = viewModel()) {
+fun ScanTicketScreen(
+    navController: NavController,
+    ticketRepository: TicketRepository
+) {
+    val viewModel: ScanTicketViewModel = viewModel(
+        factory = ScanTicketsViewModelFactory(ticketRepository)
+    )
     val context = LocalContext.current
 
     val showScanner by viewModel.showScanner.collectAsState()
     val scanResult by viewModel.scanResult.collectAsState()
     val hasCameraPermission by viewModel.hasCameraPermission.collectAsState()
+    val isValidTicket by viewModel.isValidTicket.collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -44,15 +53,16 @@ fun ScanTicketScreen(navController: NavController, viewModel: ScanTicketViewMode
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (showScanner && hasCameraPermission) {
-            TicketScannerScreen(
-                onCodeScanned = { scannedCode -> viewModel.setScanResult(scannedCode) },
-                onClose = { navController.navigate("home") }
-            )
-        } else {
-            scanResult?.let { code ->
-                val isValid = viewModel.isValidTicket(code)
-                if (isValid) {
+        when {
+            showScanner && hasCameraPermission -> {
+                TicketScannerScreen(
+                    onCodeScanned = { scannedCode -> viewModel.setScanResult(scannedCode) },
+                    onClose = { navController.navigate("home") }
+                )
+            }
+
+            scanResult != null && isValidTicket != null -> {
+                if (isValidTicket == true) {
                     ShowSuccessDialog("Valid Ticket", "The ticket is valid.") {
                         navController.navigate("home")
                     }

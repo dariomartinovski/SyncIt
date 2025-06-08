@@ -1,11 +1,14 @@
 package mk.ukim.finki.syncit.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import mk.ukim.finki.syncit.data.mock.MockData
+import kotlinx.coroutines.launch
+import mk.ukim.finki.syncit.data.repository.TicketRepository
 
-class ScanTicketViewModel : ViewModel() {
+class ScanTicketViewModel(private val ticketRepository: TicketRepository) : ViewModel() {
+
     private val _hasCameraPermission = MutableStateFlow(false)
     val hasCameraPermission: StateFlow<Boolean> = _hasCameraPermission
 
@@ -15,6 +18,9 @@ class ScanTicketViewModel : ViewModel() {
     private val _scanResult = MutableStateFlow<String?>(null)
     val scanResult: StateFlow<String?> = _scanResult
 
+    private val _isValidTicket = MutableStateFlow<Boolean?>(null)
+    val isValidTicket: StateFlow<Boolean?> = _isValidTicket
+
     fun setCameraPermission(granted: Boolean) {
         _hasCameraPermission.value = granted
         _showScanner.value = granted
@@ -23,9 +29,13 @@ class ScanTicketViewModel : ViewModel() {
     fun setScanResult(result: String) {
         _scanResult.value = result
         _showScanner.value = false
+        validateTicket(result)
     }
 
-    fun isValidTicket(code: String): Boolean {
-        return MockData.tickets.any { it.uniqueCode == code }
+    private fun validateTicket(code: String) {
+        viewModelScope.launch {
+            val tickets = ticketRepository.getAllTickets()
+            _isValidTicket.value = tickets.any { it.uniqueCode == code }
+        }
     }
 }

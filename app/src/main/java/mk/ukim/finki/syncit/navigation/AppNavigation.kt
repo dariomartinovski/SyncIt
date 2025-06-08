@@ -8,8 +8,10 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import mk.ukim.finki.syncit.data.remote.EventService
+import mk.ukim.finki.syncit.data.remote.TicketService
 import mk.ukim.finki.syncit.data.repository.AuthRepository
 import mk.ukim.finki.syncit.data.repository.EventRepository
+import mk.ukim.finki.syncit.data.repository.TicketRepository
 import mk.ukim.finki.syncit.presentation.screens.AddEventScreen
 import mk.ukim.finki.syncit.presentation.screens.AddVenueScreen
 import mk.ukim.finki.syncit.presentation.screens.BuyTicketsScreen
@@ -37,6 +39,7 @@ fun AppNavigation() {
     )
 
     val eventRepository = EventRepository(EventService(FirebaseFirestore.getInstance()))
+    val ticketRepository = TicketRepository(TicketService(FirebaseFirestore.getInstance()))
 
     NavHost(navController = navController, startDestination = "home") {
         composable("login") { LoginScreen(navController, authViewModel) }
@@ -72,6 +75,11 @@ fun AppNavigation() {
                 navController = navController
             )
         }
-        composable("scanTickets") { ScanTicketScreen(navController) }
+        composable("scanTickets") {
+            ScanTicketScreen(
+                navController = navController,
+                ticketRepository = ticketRepository
+            )
+        }
     }
 }
